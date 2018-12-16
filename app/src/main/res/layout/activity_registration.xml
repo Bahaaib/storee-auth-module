@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegistrationActivity">
+
+    <TextView
+        android:id="@+id/join"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/join_margin_start"
+        android:layout_marginTop="@dimen/join_margin_top"
+        android:fontFamily="serif"
+        android:text="@string/join"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/join_txt_size" />
+
+    <TextView
+        android:id="@+id/already_member"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/join"
+        android:layout_below="@+id/join"
+        android:text="@string/already_member"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/alreadymem_txt_size" />
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="@dimen/username_width"
+        android:layout_height="@dimen/edittext_height"
+        android:layout_alignStart="@+id/register_mail"
+        android:layout_below="@+id/already_member"
+        android:layout_marginTop="@dimen/username_margin_top"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/ic_user"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/username"
+        android:inputType="text"
+        android:textColorHint="@color/colorFontGrey" />
+
+    <EditText
+        android:id="@+id/register_mail"
+        android:layout_width="@dimen/signmail_width"
+        android:layout_height="@dimen/edittext_height"
+        android:layout_alignStart="@+id/button_frame"
+        android:layout_below="@+id/username"
+        android:layout_marginTop="@dimen/signmail_margin_top"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/ic_mail"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:textColorHint="@color/colorFontGrey" />
+
+
+    <EditText
+        android:id="@+id/register_password"
+        android:layout_width="@dimen/sinpass_width"
+        android:layout_height="@dimen/edittext_height"
+        android:layout_alignStart="@+id/register_mail"
+        android:layout_below="@+id/register_mail"
+        android:layout_marginTop="@dimen/sinpass_margin_top"
+        android:background="@drawable/rounded_edittext"
+        android:drawableStart="@drawable/ic_lock"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/register_password"
+        android:inputType="textPassword"
+        android:textColorHint="@color/colorFontGrey" />
+
+    <FrameLayout
+        android:id="@+id/button_frame"
+        android:layout_width="@dimen/btnframe_sign_width"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/register_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/btnframe_sign_margin_top"
+        android:background="@drawable/login_button"
+        android:foregroundGravity="center"
+        android:orientation="vertical">
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="@dimen/signbtn_width"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/button_frame"
+        android:layout_marginTop="@dimen/signbtn_margin_top"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="@string/register_button"
+        android:textColor="@color/colorWhite"
+        android:textStyle="bold" />
+
+
+</RelativeLayout>

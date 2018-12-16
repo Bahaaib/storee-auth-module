@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- TODO:Auth Activity -->
 
-    <!-- TODO:Login Fragment -->
+    <!-- TODO:Login Activity -->
     <dimen name="email_width">280dp</dimen>
     <dimen name="email_margin_top">192dp</dimen>
     <dimen name="edittext_width">260dp</dimen>
@@ -24,6 +23,27 @@
     <dimen name="forgot_margin_top">45dp</dimen>
 
 
-    <!-- TODO:Register Fragment -->
+    <!-- TODO:Register Activity -->
+
+    <dimen name="join_margin_left">18dp</dimen>
+    <dimen name="join_margin_start">18dp</dimen>
+    <dimen name="join_margin_top">36dp</dimen>
+    <dimen name="join_txt_size">30sp</dimen>
+
+    <dimen name="alreadymem_txt_size">15sp</dimen>
+    <dimen name="username_width">280dp</dimen>
+    <dimen name="username_margin_top">40dp</dimen>
+
+    <dimen name="signmail_width">280dp</dimen>
+    <dimen name="signmail_margin_top">10dp</dimen>
+
+    <dimen name="sinpass_width">280dp</dimen>
+    <dimen name="sinpass_margin_top">10dp</dimen>
+
+    <dimen name="btnframe_sign_width">280dp</dimen>
+    <dimen name="btnframe_sign_margin_top">380dp</dimen>
+
+    <dimen name="signbtn_width">280dp</dimen>
+    <dimen name="signbtn_margin_top">380dp</dimen>
 
 </resources>
