@@ -41,9 +41,9 @@
     <dimen name="sinpass_margin_top">10dp</dimen>
 
     <dimen name="btnframe_sign_width">280dp</dimen>
-    <dimen name="btnframe_sign_margin_top">380dp</dimen>
+    <dimen name="btnframe_sign_margin_top">450dp</dimen>
 
     <dimen name="signbtn_width">280dp</dimen>
-    <dimen name="signbtn_margin_top">380dp</dimen>
+    <dimen name="signbtn_margin_top">450dp</dimen>
 
 </resources>

@@ -43,7 +43,7 @@ public class VolleyHelper {
 
     }
 
-    public static void createUser(String email, String password) {
+    public static void loginUser(String email, String password) {
         userObj = new JSONObject();
 
         try {
@@ -54,7 +54,21 @@ public class VolleyHelper {
         }
     }
 
-    public static void requestLogin() {
+    public static void registerUser(String username, String email, String password, String mobile) {
+        userObj = new JSONObject();
+
+        try {
+            userObj.put("username", username);
+            userObj.put("email", email);
+            userObj.put("password", password);
+            userObj.put("mobile", mobile);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void performRequest() {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
                 API_URL, userObj,
