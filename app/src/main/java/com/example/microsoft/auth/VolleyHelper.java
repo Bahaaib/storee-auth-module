@@ -24,9 +24,13 @@ import java.util.Map;
 
 public class VolleyHelper {
 
-    private final static String API_URL = "https://api.myjson.com/bins/9am92";
-    private static String email;
-    private static String password;
+    private final static String API_URL = "http://192.168.1.5/ecommerce/public/api/";
+    private final static String TYPE_LOGIN = "login";
+    private final static String TYPE_REGISTER = "register";
+
+
+    private static String requestType;
+    private static String recentToken;
 
     private static Context vContext;
     private static RequestQueue requestQueue;
@@ -37,13 +41,18 @@ public class VolleyHelper {
         //Required Empty Constructor
     }
 
-    public static void volleyInitialize(Context context) {
+    static void volleyInitialize(Context context) {
         vContext = context;
         requestQueue = Volley.newRequestQueue(context);
 
     }
 
-    public static void loginUser(String email, String password) {
+    static void setUserToken(String token){
+        recentToken = token;
+    }
+
+
+    static void loginUser(String email, String password) {
         userObj = new JSONObject();
 
         try {
@@ -52,26 +61,43 @@ public class VolleyHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        setApiType(TYPE_LOGIN);
     }
 
-    public static void registerUser(String username, String email, String password, String mobile) {
+
+    static void registerUser(String username, String email, String password, String mobile) {
         userObj = new JSONObject();
 
         try {
-            userObj.put("username", username);
+            userObj.put("name_en", username);
             userObj.put("email", email);
             userObj.put("password", password);
-            userObj.put("mobile", mobile);
+            userObj.put("phone", mobile);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        setApiType(TYPE_REGISTER);
+
     }
 
-    public static void performRequest() {
+
+    private static void setApiType(String type){
+        requestType = type;
+    }
+
+
+    private static String getApiUrl() {
+        return API_URL + requestType;
+    }
+
+
+    static void performRequest() {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
-                API_URL, userObj,
+                getApiUrl(), userObj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -127,6 +153,7 @@ public class VolleyHelper {
                 final Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
                 headers.put("Accept", "application/json");
+                headers.put("Authorization", "Bearer " + recentToken);
 
                 return headers;
             }
@@ -140,7 +167,7 @@ public class VolleyHelper {
     }
 
 
-    public static void loadUser(){
+    static void loadUser() {
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                 API_URL,
                 null,

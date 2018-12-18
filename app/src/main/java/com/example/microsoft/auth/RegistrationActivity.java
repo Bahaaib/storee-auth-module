@@ -2,13 +2,16 @@ package com.example.microsoft.auth;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
+import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,6 +22,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private TextView alredayMemText;
     private Button registerButton;
     private EditText username, registerMail, registerPass, confirmPass, mobileNumber;
+    private TextInputLayout passwordLayout, confirmPasswordLayout;
     private Drawable errorIcon;
     private String usernameResult, mailResult, passResult, mobileNumberResult;
 
@@ -28,6 +32,9 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
+        //Prevent keyboard from automatic popping up once onCreate called..
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         //init Views
         alredayMemText = (TextView) findViewById(R.id.already_member);
         username = (EditText) findViewById(R.id.username);
@@ -35,6 +42,8 @@ public class RegistrationActivity extends AppCompatActivity {
         registerPass = (EditText) findViewById(R.id.register_password);
         confirmPass = (EditText) findViewById(R.id.confirm_password);
         mobileNumber = (EditText) findViewById(R.id.mobile_number);
+        passwordLayout = (TextInputLayout) findViewById(R.id.register_password_layout);
+        confirmPasswordLayout = (TextInputLayout) findViewById(R.id.confirm_password_layout);
         registerButton = (Button) findViewById(R.id.register_button);
         errorIcon = (Drawable) ContextCompat.getDrawable(this, R.drawable.ic_error);
 
@@ -44,6 +53,8 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent registerIntent = new Intent(RegistrationActivity.this, LoginActivity.class);
+                //Prevent Restarting activity onBack Pressed
+                registerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(registerIntent);
             }
         });
@@ -77,13 +88,25 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 if (!isValidPassword(registerPassStr)) {
                     registerPass.setError(getString(R.string.pass_char_less), errorIcon);
+
+                    //Hide password Toggle icon to avoid icons overlay
+                    passwordLayout.setPasswordVisibilityToggleEnabled(false);
+
+                    //Reveal password Toggle icon again once user restart typing
+                    callTextWatcher(registerPass, passwordLayout);
                 } else {//send valid data
                     passResult = registerPassStr;
                 }
 
                 if (!isMatchedPassword(registerPassStr, confirmPassStr)) {
                     confirmPass.setError(getString(R.string.pass_mismatch), errorIcon);
-                } else {
+
+                    //Hide password Toggle icon to avoid icons overlay
+                    confirmPasswordLayout.setPasswordVisibilityToggleEnabled(false);
+
+                    //Reveal password Toggle icon again once user restart typing
+                    callTextWatcher(confirmPass, confirmPasswordLayout);
+
                 }
 
                 if (!isValidMobileNumber(mobileNumberStr)) {
@@ -97,7 +120,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             .show();
 
                 } else {
-
+                    registerUser();
                 }
 
 
@@ -152,6 +175,25 @@ public class RegistrationActivity extends AppCompatActivity {
         }
     }
 
+    private void callTextWatcher(EditText editText, final TextInputLayout layout) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                layout.setPasswordVisibilityToggleEnabled(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
     // Check all fields contain No Errors before request
     private boolean hasErrors() {
         CharSequence userError = username.getError();
@@ -169,6 +211,12 @@ public class RegistrationActivity extends AppCompatActivity {
         } else {
             return true;
         }
+    }
+
+    private void registerUser() {
+        VolleyHelper.volleyInitialize(getBaseContext());
+        VolleyHelper.registerUser(usernameResult, mailResult, passResult, mobileNumberResult);
+        VolleyHelper.performRequest();
     }
 
 }

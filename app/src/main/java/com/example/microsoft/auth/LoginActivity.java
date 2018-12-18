@@ -3,13 +3,17 @@ package com.example.microsoft.auth;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -34,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     //Mail Auth
     private TextView regText;
     private EditText loginMail, loginPassword;
+    private TextInputLayout loginPasswordLayout;
     private Button mailLoginButton;
     private Drawable errorIcon;
 
@@ -53,10 +58,14 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //Prevent keyboard from automatic popping up once onCreate called..
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         //Mail Auth init..
         regText = (TextView) findViewById(R.id.register_text);
         loginMail = (EditText) findViewById(R.id.login_mail);
         loginPassword = (EditText) findViewById(R.id.login_password);
+        loginPasswordLayout = (TextInputLayout)findViewById(R.id.login_password_layout);
         mailLoginButton = (Button) findViewById(R.id.mail_login);
         errorIcon = (Drawable) ContextCompat.getDrawable(this, R.drawable.ic_error);
 
@@ -93,6 +102,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (!isValidPassword(loginPasswordStr)) {
                     successfulLogin = false;
                     loginPassword.setError(getString(R.string.pass_char_less), errorIcon);
+
+                    //Hide password Toggle icon to avoid icons overlay
+                    loginPasswordLayout.setPasswordVisibilityToggleEnabled(false);
+
+                    //Reveal password Toggle icon again once user restart typing
+                    callTextWatcher(loginPassword, loginPasswordLayout);
                 } else {
                     //Send valid Data
                     successfulLogin = true;
@@ -141,10 +156,32 @@ public class LoginActivity extends AppCompatActivity {
         return false;
     }
 
+    private void callTextWatcher(EditText editText, final TextInputLayout layout) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                layout.setPasswordVisibilityToggleEnabled(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
     //
     public void requestLogIn() {
         VolleyHelper.volleyInitialize(getBaseContext());
-        VolleyHelper.loadUser();
+
+        VolleyHelper.loginUser(mailResult, passResult);
+        //VolleyHelper.setUserToken();
+        VolleyHelper.performRequest();
     }
 
     public void facebookRequest() {
