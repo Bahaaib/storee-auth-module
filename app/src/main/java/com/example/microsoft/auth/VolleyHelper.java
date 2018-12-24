@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class VolleyHelper {
 
-    private final static String API_URL = "http://192.168.1.5/ecommerce/public/api/";
+    private final static String API_URL = "http://192.168.1.24/ecommerce/public/api/";
     private final static String TYPE_LOGIN = "login";
     private final static String TYPE_REGISTER = "register";
 
@@ -94,7 +94,7 @@ public class VolleyHelper {
     }
 
 
-    static void performRequest() {
+    static void performRegisterRequest(final TokenListener listener) {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
                 getApiUrl(), userObj,
@@ -108,27 +108,18 @@ public class VolleyHelper {
 
 
                             // Initialize Gson and start new transaction
-                            Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
-                                @Override
-                                public boolean shouldSkipField(FieldAttributes f) {
-                                    return false;
-                                }
+                            Gson gson = new Gson();
 
-                                @Override
-                                public boolean shouldSkipClass(Class<?> clazz) {
-                                    return false;
-                                }
-                            }).create();
-
-                            JSONArray jsonArray = response.getJSONArray("success");
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                UserModel user = gson.fromJson(jsonArray.get(i).toString(), UserModel.class);
-                                Log.i("UserLoop", "Inside for loop");
+                            JSONObject object = response.getJSONObject("success");
+                                UserModel user = gson.fromJson(object.toString(), UserModel.class);
 
                                 Log.i("username", user.getUsername());
                                 Log.i("userToken", user.getToken());
-                            }
-                            //Notify the RecyclerView with the new data..
+
+                                //Notify others that TokenListener has been received
+                                listener.onTokenReceived(user.getToken());
+
+                            //}
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -143,6 +134,10 @@ public class VolleyHelper {
             public void onErrorResponse(VolleyError error) {
                 Log.i("APIMessage", "Couldn't Reach API");
                 Log.i("APIMessage", error.toString());
+                Log.i("APIMessage", getApiUrl());
+
+                //Notify others Token has not been received in time..
+                listener.onTokenError();
 
 
             }
@@ -153,7 +148,65 @@ public class VolleyHelper {
                 final Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
                 headers.put("Accept", "application/json");
-                headers.put("Authorization", "Bearer " + recentToken);
+
+                return headers;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+        };
+        requestQueue.add(request);
+    }
+
+    static void performLoginRequest() {
+
+        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
+                getApiUrl(), userObj,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            Log.i("APIMessage", "Success!");
+                            Log.i("APIMessage", response.toString());
+
+
+                            // Initialize Gson and start new transaction
+                            Gson gson = new Gson();
+
+                            JSONObject object = response.getJSONObject("success");
+                            UserModel user = gson.fromJson(object.toString(), UserModel.class);
+
+                            Log.i("username", user.getUsername());
+                            Log.i("userToken", user.getToken());
+
+                            //}
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }, new Response.ErrorListener()
+
+
+        {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("APIMessage", "Couldn't Reach API");
+                Log.i("APIMessage", error.toString());
+                Log.i("APIMessage", getApiUrl());
+
+            }
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                final Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Accept", "application/json");
 
                 return headers;
             }

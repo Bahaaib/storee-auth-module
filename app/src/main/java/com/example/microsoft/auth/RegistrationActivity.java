@@ -2,6 +2,7 @@ package com.example.microsoft.auth;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,7 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RegistrationActivity extends AppCompatActivity {
+public class RegistrationActivity extends AppCompatActivity implements TokenListener{
 
     private TextView alredayMemText;
     private Button registerButton;
@@ -25,6 +27,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private TextInputLayout passwordLayout, confirmPasswordLayout;
     private Drawable errorIcon;
     private String usernameResult, mailResult, passResult, mobileNumberResult;
+
+    private final String TOKEN_KEY = "token";
+    private final String TOKEN_NOT_FOUND = "empty";
 
 
     @Override
@@ -216,7 +221,22 @@ public class RegistrationActivity extends AppCompatActivity {
     private void registerUser() {
         VolleyHelper.volleyInitialize(getBaseContext());
         VolleyHelper.registerUser(usernameResult, mailResult, passResult, mobileNumberResult);
-        VolleyHelper.performRequest();
+        VolleyHelper.performRegisterRequest(this);
     }
 
+    //Save Token to SharedPreferences once received..
+    @Override
+    public void onTokenReceived(String token) {
+        PreferenceManager.getDefaultSharedPreferences(getBaseContext())
+                .edit()
+                .putString(TOKEN_KEY, token)
+                .apply();
+        Log.i("Statuss", "Token Saved!");
+    }
+
+    @Override
+    public void onTokenError() {
+        Toast.makeText(getApplicationContext(), "Login Error!", Toast.LENGTH_LONG)
+                .show();
+    }
 }

@@ -42,6 +42,7 @@
             android:layout_below="@+id/already_member"
             android:layout_alignStart="@+id/register_mail_layout"
             android:layout_marginTop="@dimen/username_margin_top"
+            android:focusableInTouchMode="false"
             android:gravity="center">
 
             <EditText

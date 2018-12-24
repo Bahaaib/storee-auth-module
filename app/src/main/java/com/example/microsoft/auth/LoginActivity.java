@@ -1,7 +1,9 @@
 package com.example.microsoft.auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
@@ -19,7 +21,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -44,6 +45,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private String mailResult, passResult;
     private boolean successfulLogin;
+    private final String TOKEN_KEY = "token";
+    private final String TOKEN_NOT_FOUND = "empty";
+    private final String LOGOUT_KEY = "logout";
+    private String token;
+    private boolean isLoggedOut;
+
 
     //FB OAuth
     private CallbackManager callbackManager;
@@ -65,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         regText = (TextView) findViewById(R.id.register_text);
         loginMail = (EditText) findViewById(R.id.login_mail);
         loginPassword = (EditText) findViewById(R.id.login_password);
-        loginPasswordLayout = (TextInputLayout)findViewById(R.id.login_password_layout);
+        loginPasswordLayout = (TextInputLayout) findViewById(R.id.login_password_layout);
         mailLoginButton = (Button) findViewById(R.id.mail_login);
         errorIcon = (Drawable) ContextCompat.getDrawable(this, R.drawable.ic_error);
 
@@ -142,6 +149,15 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        restoreSavedPrefs();
+        if (!token.equals(TOKEN_NOT_FOUND) && !isLoggedOut){
+            Log.i("Statuss", "Logged in AUTO");
+        }
+    }
+
     // validating email id
     private boolean isValidEmail(String email) {
 
@@ -175,16 +191,22 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    //
-    public void requestLogIn() {
+
+    private void requestLogIn() {
         VolleyHelper.volleyInitialize(getBaseContext());
 
         VolleyHelper.loginUser(mailResult, passResult);
-        //VolleyHelper.setUserToken();
-        VolleyHelper.performRequest();
+        VolleyHelper.performLoginRequest();
     }
 
-    public void facebookRequest() {
+
+    private void restoreSavedPrefs() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        token = preferences.getString(TOKEN_KEY, TOKEN_NOT_FOUND);
+        isLoggedOut = preferences.getBoolean(LOGOUT_KEY, false);
+    }
+
+    private void facebookRequest() {
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -237,4 +259,6 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
     }
+
+
 }

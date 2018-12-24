@@ -16,6 +16,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/email_margin_top"
         android:autofillHints="@string/autofill_email"
+        android:focusableInTouchMode="false"
         android:gravity="center">
 
         <EditText
