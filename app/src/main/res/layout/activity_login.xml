@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
+    android:focusableInTouchMode="true"
     tools:context=".LoginActivity">
 
 
@@ -16,7 +17,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/email_margin_top"
         android:autofillHints="@string/autofill_email"
-        android:focusableInTouchMode="false"
         android:gravity="center">
 
         <EditText

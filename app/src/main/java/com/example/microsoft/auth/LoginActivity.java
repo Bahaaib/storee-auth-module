@@ -3,12 +3,12 @@ package com.example.microsoft.auth;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -30,8 +30,6 @@ import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import org.json.JSONObject;
-
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
@@ -50,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private final String LOGOUT_KEY = "logout";
     private String token;
     private boolean isLoggedOut;
+    private SharedPreferences preferences;
 
 
     //FB OAuth
@@ -67,6 +66,10 @@ public class LoginActivity extends AppCompatActivity {
 
         //Prevent keyboard from automatic popping up once onCreate called..
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        //Init SharedPrefs..
+        preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
 
         //Mail Auth init..
         regText = (TextView) findViewById(R.id.register_text);
@@ -196,12 +199,14 @@ public class LoginActivity extends AppCompatActivity {
         VolleyHelper.volleyInitialize(getBaseContext());
 
         VolleyHelper.loginUser(mailResult, passResult);
-        VolleyHelper.performLoginRequest();
+        VolleyHelper.performRequest();
+
+        //Reset Logout FLAG
+        preferences.edit().putBoolean(LOGOUT_KEY, false).apply();
     }
 
 
     private void restoreSavedPrefs() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         token = preferences.getString(TOKEN_KEY, TOKEN_NOT_FOUND);
         isLoggedOut = preferences.getBoolean(LOGOUT_KEY, false);
     }

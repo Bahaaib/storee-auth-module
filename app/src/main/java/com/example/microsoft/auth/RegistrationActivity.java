@@ -221,7 +221,8 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
     private void registerUser() {
         VolleyHelper.volleyInitialize(getBaseContext());
         VolleyHelper.registerUser(usernameResult, mailResult, passResult, mobileNumberResult);
-        VolleyHelper.performRegisterRequest(this);
+        VolleyHelper.setTokenListener(this);
+        VolleyHelper.performRequest();
     }
 
     //Save Token to SharedPreferences once received..
