@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class VolleyHelper {
 
-    private final static String API_URL = "http://192.168.1.24/ecommerce/public/api/";
+    private final static String API_URL = "http://192.168.1.16/ecommerce/public/api/";
     private final static String TYPE_LOGIN = "login";
     private final static String TYPE_REGISTER = "register";
 
@@ -44,6 +44,7 @@ public class VolleyHelper {
         requestQueue = Volley.newRequestQueue(context);
 
     }
+
 
     static void setUserToken(String token) {
         recentToken = token;

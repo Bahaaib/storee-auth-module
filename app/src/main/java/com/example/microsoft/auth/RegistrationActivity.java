@@ -2,11 +2,11 @@ package com.example.microsoft.auth;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -79,7 +79,7 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
                     username.setError(getString(R.string.invalid_username), errorIcon);
                 } else {
                     username.setError(null);
-                    //send valid data
+                    //Assign valid data
                     usernameResult = usernameStr;
                 }
 
@@ -87,7 +87,7 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
                 if (!isValidEmail(registerMailStr)) {
 
                     registerMail.setError(getString(R.string.invalid_format), errorIcon);
-                } else {//send valid data
+                } else {//Assign valid data
                     mailResult = registerMailStr;
                 }
 

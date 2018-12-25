@@ -32,7 +32,7 @@ import com.facebook.login.widget.LoginButton;
 
 import java.util.Arrays;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements TokenListener {
 
     //Mail Auth
     private TextView regText;
@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                     loginMail.setError(getString(R.string.invalid_mail), errorIcon);
                     successfulLogin = false;
 
-                } else {//send valid data
+                } else {//Assign valid data
                     successfulLogin = true;
                     mailResult = loginMailStr;
                 }
@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                     //Reveal password Toggle icon again once user restart typing
                     callTextWatcher(loginPassword, loginPasswordLayout);
                 } else {
-                    //Send valid Data
+                    //Assign valid Data
                     successfulLogin = true;
                     passResult = loginPasswordStr;
 
@@ -158,6 +158,8 @@ public class LoginActivity extends AppCompatActivity {
         restoreSavedPrefs();
         if (!token.equals(TOKEN_NOT_FOUND) && !isLoggedOut){
             Log.i("Statuss", "Logged in AUTO");
+        } else {
+            Log.i("Statuss", "Logged in NEW SESSION!");
         }
     }
 
@@ -174,6 +176,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         return false;
     }
+
 
     private void callTextWatcher(EditText editText, final TextInputLayout layout) {
         editText.addTextChangedListener(new TextWatcher() {
@@ -199,10 +202,14 @@ public class LoginActivity extends AppCompatActivity {
         VolleyHelper.volleyInitialize(getBaseContext());
 
         VolleyHelper.loginUser(mailResult, passResult);
+        VolleyHelper.setTokenListener(this);
         VolleyHelper.performRequest();
 
         //Reset Logout FLAG
         preferences.edit().putBoolean(LOGOUT_KEY, false).apply();
+
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        startActivity(intent);
     }
 
 
@@ -210,6 +217,21 @@ public class LoginActivity extends AppCompatActivity {
         token = preferences.getString(TOKEN_KEY, TOKEN_NOT_FOUND);
         isLoggedOut = preferences.getBoolean(LOGOUT_KEY, false);
     }
+
+    @Override
+    public void onTokenReceived(String token) {
+        preferences.edit()
+                .putString(TOKEN_KEY, token)
+                .apply();
+        Log.i("Statuss", "Token Saved!");
+    }
+
+    @Override
+    public void onTokenError() {
+        Toast.makeText(getApplicationContext(), "Login Error!", Toast.LENGTH_LONG)
+                .show();
+    }
+
 
     private void facebookRequest() {
 
