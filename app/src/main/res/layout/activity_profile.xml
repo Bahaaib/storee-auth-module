@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Profile.ProfileActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/user_background_img"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/user_background_image_height"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/user_background_image" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="@dimen/profile_image_width"
+            android:layout_height="@dimen/profile_image_height"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/profile_image_margin_top"
+            android:src="@drawable/profile_image"
+            app:civ_border_color="@color/profileImageBorder"
+            app:civ_border_width="@dimen/profile_image_border" />
+
+        <TextView
+            android:id="@+id/user_name"
+            style="@style/userNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profile_image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/user_name_margin_top"
+            android:text="@string/dummy_name" />
+
+        <TextView
+            android:id="@+id/general_text"
+            style="@style/highLightedText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_background_img"
+            android:text="@string/general" />
+
+        <TextView
+            android:id="@+id/mobile_text"
+            style="@style/profileInfoTitles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/general_text"
+            android:text="@string/mobile" />
+
+
+        <TextView
+            android:id="@+id/email_text"
+            style="@style/profileInfoTitles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mobile_text"
+            android:text="@string/email" />
+
+
+        <TextView
+            android:id="@+id/gender_text"
+            style="@style/profileInfoTitles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/email_text"
+            android:text="@string/gender" />
+
+        <TextView
+            android:id="@+id/shipping_address_text"
+            style="@style/profileInfoTitles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/gender_text"
+            android:text="@string/shipping_address" />
+
+        <View
+            android:id="@+id/line1"
+            style="@style/profileInfoTitles"
+            android:layout_width="@dimen/dividingLine_width"
+            android:layout_height="1dp"
+            android:layout_below="@+id/shipping_address_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dividingLine_margin_top"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/order_text"
+            style="@style/highLightedText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/line1"
+            android:text="@string/order" />
+
+        <TextView
+            android:id="@+id/my_order"
+            style="@style/orderAndOther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/order_text"
+            android:text="@string/my_orders" />
+
+        <TextView
+            android:id="@+id/disputed_order"
+            style="@style/orderAndOther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/my_order"
+            android:text="@string/disputed_orders" />
+
+        <View
+            android:id="@+id/line2"
+            style="@style/profileInfoTitles"
+            android:layout_width="@dimen/dividingLine_width"
+            android:layout_height="1dp"
+            android:layout_below="@+id/disputed_order"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dividingLine_margin_top"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/other_text"
+            style="@style/highLightedText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/line2"
+            android:text="@string/other" />
+
+        <TextView
+            android:id="@+id/wishing_list"
+            style="@style/orderAndOther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/other_text"
+            android:text="@string/wishing_list" />
+
+        <TextView
+            android:id="@+id/my_points"
+            style="@style/orderAndOther"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/wishing_list"
+            android:text="@string/my_points" />
+
+
+        <TextView
+            android:id="@+id/mobile_number"
+            style="@style/profileInfoDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/general_text"
+            android:text="@string/dialog_number_hint"
+            android:textColor="@color/colorWhite" />
+
+        <TextView
+            android:id="@+id/email"
+            style="@style/profileInfoDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mobile_number"
+            android:text="@string/dummy_mail" />
+
+        <TextView
+            android:id="@+id/gender"
+            style="@style/profileInfoDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/email"
+            android:text="@string/female"
+            android:textColor="@color/colorWhite" />
+
+        <ImageView
+            android:id="@+id/shipping_address_edit"
+            style="@style/profileInfoDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/gender"
+            android:src="@drawable/ic_edit" />
+
+    </RelativeLayout>
+
+</ScrollView>

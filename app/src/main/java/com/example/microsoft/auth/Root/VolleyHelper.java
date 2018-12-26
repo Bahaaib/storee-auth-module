@@ -1,4 +1,4 @@
-package com.example.microsoft.auth;
+package com.example.microsoft.auth.Root;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.microsoft.auth.Auth.TokenListener;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -40,18 +41,19 @@ public class VolleyHelper {
         //Required Empty Constructor
     }
 
-    static void volleyInitialize(Context context) {
+
+    public static void volleyInitialize(Context context) {
         requestQueue = Volley.newRequestQueue(context);
 
     }
 
 
-    static void setUserToken(String token) {
+    public static void setUserToken(String token) {
         recentToken = token;
     }
 
 
-    static void loginUser(String email, String password) {
+    public static void loginUser(String email, String password) {
         userObj = new JSONObject();
 
         try {
@@ -65,7 +67,7 @@ public class VolleyHelper {
     }
 
 
-    static void registerUser(String username, String email, String password, String mobile) {
+    public static void registerUser(String username, String email, String password, String mobile) {
         userObj = new JSONObject();
 
         try {
@@ -93,12 +95,12 @@ public class VolleyHelper {
     }
 
 
-    static void setTokenListener(TokenListener listener) {
+    public static void setTokenListener(TokenListener listener) {
         tokenListener = listener;
     }
 
 
-    static void performRequest() {
+    public static void performRequest() {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
                 getApiUrl(), userObj,
@@ -170,7 +172,80 @@ public class VolleyHelper {
     }
 
 
-    static void loadUser() {
+    public static void performUserDataRequest() {
+
+        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
+                getApiUrl(), null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            Log.i("APIMessage", "Success!");
+                            Log.i("APIMessage", response.toString());
+
+
+                            // Initialize Gson and start new transaction
+                            Gson gson = new Gson();
+
+                            JSONObject object = response.getJSONObject("success");
+                            UserModel user = gson.fromJson(object.toString(), UserModel.class);
+
+                            String userToken = user.getToken();
+                            Log.i("username", user.getUsername());
+                            Log.i("userToken", user.getToken());
+
+                            //Notify others that Token has been received
+                            if (!userToken.isEmpty()) {
+                                tokenListener.onTokenReceived(userToken);
+                            }else {
+                                tokenListener.onTokenError();
+                            }
+
+                            //}
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }, new Response.ErrorListener()
+
+
+        {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("APIMessage", "Couldn't Reach API");
+                Log.i("APIMessage", error.toString());
+                Log.i("APIMessage", getApiUrl());
+
+                //Notify others Token has not been received in time..
+                tokenListener.onTokenError();
+
+
+            }
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                final Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Accept", "application/json");
+                headers.put("Authentication", "Bearer" + recentToken);
+
+                return headers;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+        };
+        requestQueue.add(request);
+    }
+
+
+    public static void loadUser() {
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
                 API_URL,
                 null,

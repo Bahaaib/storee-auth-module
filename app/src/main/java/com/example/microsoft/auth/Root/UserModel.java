@@ -1,4 +1,4 @@
-package com.example.microsoft.auth;
+package com.example.microsoft.auth.Root;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -12,10 +12,13 @@ public class UserModel implements Serializable {
     private String email;
 
     @SerializedName("phone")
-    private String mobil;
+    private String mobile;
 
     @SerializedName("token")
     private String token;
+
+    private boolean male;
+
 
     public UserModel() {
         //Required Empty Constructor
@@ -37,12 +40,12 @@ public class UserModel implements Serializable {
         this.email = email;
     }
 
-    public String getMobil() {
-        return mobil;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setMobil(String mobil) {
-        this.mobil = mobil;
+    public void setMobile(String mobil) {
+        this.mobile = mobil;
     }
 
     public String getToken() {
@@ -52,4 +55,13 @@ public class UserModel implements Serializable {
     public void setToken(String token) {
         this.token = token;
     }
+
+    public boolean isMale() {
+        return male;
+    }
+
+    public void setIsMale(boolean isMale){
+        this.male = isMale;
+    }
+
 }

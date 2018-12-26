@@ -17,7 +17,6 @@
     <dimen name="login_btn_margin_top">28dp</dimen>
 
 
-
     <dimen name="register_margin_top">20dp</dimen>
 
     <dimen name="forgot_margin_top">45dp</dimen>
@@ -45,5 +44,30 @@
 
     <dimen name="signbtn_width">280dp</dimen>
     <dimen name="signbtn_margin_top">450dp</dimen>
+
+
+    <!-- TODO:Profile Activity -->
+
+    <dimen name="user_background_image_height">200dp</dimen>
+    <dimen name="user_back_ground_margin_bottom">10dp</dimen>
+    <dimen name="profile_image_width">120dp</dimen>
+    <dimen name="profile_image_height">120dp</dimen>
+    <dimen name="profile_image_margin_top">25dp</dimen>
+    <dimen name="profile_image_border">2dp</dimen>
+    <dimen name="user_name_margin_top">10dp</dimen>
+    <dimen name="highLightedText_margin_top">5dp</dimen>
+    <dimen name="highLightedText_margin_bottom">5dp</dimen>
+    <dimen name="highLightedText_margin_left">30dp</dimen>
+    <dimen name="profileInfoTitles_margin_left">50dp</dimen>
+    <dimen name="profileInfoTitles_margin_top">7dp</dimen>
+    <dimen name="dividingLine_margin_top">15dp</dimen>
+    <dimen name="dividingLine_width">300dp</dimen>
+    <dimen name="profileInfoDetails_margin_right">30dp</dimen>
+    <dimen name="orderAndOther_margin_bottom">5dp</dimen>
+    <dimen name="genderDialog_margin_top">5dp</dimen>
+    <dimen name="genderDialog_margin_left">30dp</dimen>
+    <dimen name="numberDialog_margin_top">5dp</dimen>
+    <dimen name="numberDialog_margin_left">30dp</dimen>
+    <dimen name="numberDialog_margin_right">30dp</dimen>
 
 </resources>

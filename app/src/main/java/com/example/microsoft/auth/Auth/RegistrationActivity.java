@@ -1,4 +1,4 @@
-package com.example.microsoft.auth;
+package com.example.microsoft.auth.Auth;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -19,7 +19,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RegistrationActivity extends AppCompatActivity implements TokenListener{
+import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.VolleyHelper;
+
+public class RegistrationActivity extends AppCompatActivity implements TokenListener {
 
     private TextView alredayMemText;
     private Button registerButton;

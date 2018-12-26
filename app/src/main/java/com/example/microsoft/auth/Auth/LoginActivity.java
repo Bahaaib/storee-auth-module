@@ -1,4 +1,4 @@
-package com.example.microsoft.auth;
+package com.example.microsoft.auth.Auth;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +21,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.microsoft.auth.Profile.ProfileActivity;
+import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.VolleyHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -208,7 +211,7 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
         //Reset Logout FLAG
         preferences.edit().putBoolean(LOGOUT_KEY, false).apply();
 
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
         startActivity(intent);
     }
 

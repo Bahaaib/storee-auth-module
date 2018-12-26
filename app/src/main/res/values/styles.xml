@@ -1,13 +1,66 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- TODO: App Values -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- TODO: Profile Activity -->
+    <style name="userNameText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+    </style>
+
+    <style name="highLightedText">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:layout_marginTop">@dimen/highLightedText_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/highLightedText_margin_bottom</item>
+        <item name="android:layout_marginLeft">@dimen/highLightedText_margin_left</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="profileInfoTitles">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_marginTop">@dimen/profileInfoTitles_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/profileInfoTitles_margin_left</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+    </style>
+
+    <style name="profileInfoDetails">
+        <item name="android:layout_marginRight">@dimen/profileInfoDetails_margin_right</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginTop">@dimen/profileInfoTitles_margin_top</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textSize">14sp</item>
+
+    </style>
+
+    <style name="orderAndOther">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_marginTop">@dimen/profileInfoTitles_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/profileInfoTitles_margin_left</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:layout_marginBottom">@dimen/orderAndOther_margin_bottom</item>
+    </style>
+
+    <style name="genderDialog">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_marginTop">@dimen/genderDialog_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/genderDialog_margin_left</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+
+    </style>
+
+    <style name="numberDialog">
+        <item name="android:layout_marginTop">@dimen/numberDialog_margin_top</item>
+        <item name="android:layout_marginLeft">@dimen/numberDialog_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/numberDialog_margin_right</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+    </style>
 
 
 </resources>

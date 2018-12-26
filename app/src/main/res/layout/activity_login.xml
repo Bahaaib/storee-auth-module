@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
     android:focusableInTouchMode="true"
-    tools:context=".LoginActivity">
+    tools:context=".Auth.LoginActivity">
 
 
     <android.support.design.widget.TextInputLayout

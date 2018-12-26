@@ -12,8 +12,7 @@
     <color name="colorEditText">#f7f3f5</color>
     <color name="colorFontGrey">#9e9e9e</color>
 
-
-
-
     <color name="colorBlack">#000000</color>
+
+    <color name="ColorHighlightedText">#c4747d</color>
 </resources>

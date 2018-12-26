@@ -1,4 +1,4 @@
-package com.example.microsoft.auth;
+package com.example.microsoft.auth.Auth;
 
 public interface TokenListener {
 
