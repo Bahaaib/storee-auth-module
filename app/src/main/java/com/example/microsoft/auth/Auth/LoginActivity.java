@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.microsoft.auth.Profile.ProfileActivity;
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserModel;
 import com.example.microsoft.auth.Root.VolleyHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -35,7 +36,7 @@ import com.facebook.login.widget.LoginButton;
 
 import java.util.Arrays;
 
-public class LoginActivity extends AppCompatActivity implements TokenListener {
+public class LoginActivity extends AppCompatActivity implements AuthResponseListener {
 
     //Mail Auth
     private TextView regText;
@@ -44,14 +45,13 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
     private Button mailLoginButton;
     private Drawable errorIcon;
 
-    private String mailResult, passResult;
-    private boolean successfulLogin;
     private final String TOKEN_KEY = "token";
     private final String TOKEN_NOT_FOUND = "empty";
     private final String LOGOUT_KEY = "logout";
     private String token;
     private boolean isLoggedOut;
     private SharedPreferences preferences;
+    private UserModel user;
 
 
     //FB OAuth
@@ -70,17 +70,20 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
         //Prevent keyboard from automatic popping up once onCreate called..
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        //Init SharedPrefs..
+        //Init|Recall SharedPrefs..
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
+        if (user == null) {
+            user = new UserModel();
+        }
 
         //Mail Auth init..
-        regText = (TextView) findViewById(R.id.register_text);
-        loginMail = (EditText) findViewById(R.id.login_mail);
-        loginPassword = (EditText) findViewById(R.id.login_password);
-        loginPasswordLayout = (TextInputLayout) findViewById(R.id.login_password_layout);
-        mailLoginButton = (Button) findViewById(R.id.mail_login);
-        errorIcon = (Drawable) ContextCompat.getDrawable(this, R.drawable.ic_error);
+        regText = findViewById(R.id.register_text);
+        loginMail = findViewById(R.id.login_mail);
+        loginPassword = findViewById(R.id.login_password);
+        loginPasswordLayout = findViewById(R.id.login_password_layout);
+        mailLoginButton = findViewById(R.id.mail_login);
+        errorIcon = ContextCompat.getDrawable(this, R.drawable.ic_error);
 
 
         //Not A member.. Go to Register
@@ -97,7 +100,6 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
             @Override
             public void onClick(View v) {
 
-                successfulLogin = false;
                 final String loginMailStr = loginMail.getText().toString();
                 final String loginPasswordStr = loginPassword.getText().toString();
                 errorIcon.setBounds(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight());
@@ -105,15 +107,12 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
 
                 if (!isValidEmail(loginMailStr)) {
                     loginMail.setError(getString(R.string.invalid_mail), errorIcon);
-                    successfulLogin = false;
 
                 } else {//Assign valid data
-                    successfulLogin = true;
-                    mailResult = loginMailStr;
+                    user.setEmail(loginMailStr);
                 }
 
                 if (!isValidPassword(loginPasswordStr)) {
-                    successfulLogin = false;
                     loginPassword.setError(getString(R.string.pass_char_less), errorIcon);
 
                     //Hide password Toggle icon to avoid icons overlay
@@ -123,12 +122,11 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
                     callTextWatcher(loginPassword, loginPasswordLayout);
                 } else {
                     //Assign valid Data
-                    successfulLogin = true;
-                    passResult = loginPasswordStr;
+                    user.setPassword(loginPasswordStr);
 
 
                 }
-                if (!successfulLogin) {
+                if (hasErrors()) {
                     Toast.makeText(getApplicationContext(), R.string.login_data_problem, Toast.LENGTH_LONG).show();
                 } else {
                     requestLogIn();
@@ -142,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
 
 
         //FB OAuth init..
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
 
 
@@ -174,10 +172,7 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
 
     // validating password with retype password
     private boolean isValidPassword(String pass) {
-        if (!TextUtils.isEmpty(pass) && pass.length() > 7) {
-            return true;
-        }
-        return false;
+        return !TextUtils.isEmpty(pass) && pass.length() > 7;
     }
 
 
@@ -204,8 +199,8 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
     private void requestLogIn() {
         VolleyHelper.volleyInitialize(getBaseContext());
 
-        VolleyHelper.loginUser(mailResult, passResult);
-        VolleyHelper.setTokenListener(this);
+        VolleyHelper.loginUser(user);
+        VolleyHelper.setAuthResponseListener(this);
         VolleyHelper.performRequest();
 
         //Reset Logout FLAG
@@ -222,18 +217,27 @@ public class LoginActivity extends AppCompatActivity implements TokenListener {
     }
 
     @Override
-    public void onTokenReceived(String token) {
+    public void onResponseReceived(UserModel receivedModel) {
+        user = receivedModel;
         preferences.edit()
-                .putString(TOKEN_KEY, token)
+                .putString(TOKEN_KEY, user.getToken())
                 .apply();
         Log.i("Statuss", "Token Saved!");
     }
 
     @Override
-    public void onTokenError() {
+    public void onResponseError() {
         Toast.makeText(getApplicationContext(), "Login Error!", Toast.LENGTH_LONG)
                 .show();
     }
+
+    private boolean hasErrors() {
+        CharSequence mailError = loginMail.getError();
+        CharSequence passError = loginPassword.getError();
+
+        return mailError != null || passError != null;
+    }
+
 
 
     private void facebookRequest() {

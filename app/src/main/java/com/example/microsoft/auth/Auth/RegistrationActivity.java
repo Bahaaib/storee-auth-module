@@ -1,6 +1,7 @@
 package com.example.microsoft.auth.Auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,19 +21,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserModel;
 import com.example.microsoft.auth.Root.VolleyHelper;
 
-public class RegistrationActivity extends AppCompatActivity implements TokenListener {
+public class RegistrationActivity extends AppCompatActivity implements AuthResponseListener {
 
     private TextView alredayMemText;
     private Button registerButton;
     private EditText username, registerMail, registerPass, confirmPass, mobileNumber;
     private TextInputLayout passwordLayout, confirmPasswordLayout;
     private Drawable errorIcon;
-    private String usernameResult, mailResult, passResult, mobileNumberResult;
+    private SharedPreferences preferences;
+    private UserModel user;
 
     private final String TOKEN_KEY = "token";
-    private final String TOKEN_NOT_FOUND = "empty";
 
 
     @Override
@@ -43,17 +45,23 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
         //Prevent keyboard from automatic popping up once onCreate called..
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+        //Init|Recall SharedPrefs..
+        preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        if (user == null) {
+            user = new UserModel();
+        }
+
         //init Views
-        alredayMemText = (TextView) findViewById(R.id.already_member);
-        username = (EditText) findViewById(R.id.username);
-        registerMail = (EditText) findViewById(R.id.register_mail);
-        registerPass = (EditText) findViewById(R.id.register_password);
-        confirmPass = (EditText) findViewById(R.id.confirm_password);
-        mobileNumber = (EditText) findViewById(R.id.mobile_number);
-        passwordLayout = (TextInputLayout) findViewById(R.id.register_password_layout);
-        confirmPasswordLayout = (TextInputLayout) findViewById(R.id.confirm_password_layout);
-        registerButton = (Button) findViewById(R.id.register_button);
-        errorIcon = (Drawable) ContextCompat.getDrawable(this, R.drawable.ic_error);
+        alredayMemText = findViewById(R.id.already_member);
+        username = findViewById(R.id.username);
+        registerMail = findViewById(R.id.register_mail);
+        registerPass = findViewById(R.id.register_password);
+        confirmPass = findViewById(R.id.confirm_password);
+        mobileNumber = findViewById(R.id.mobile_number);
+        passwordLayout = findViewById(R.id.register_password_layout);
+        confirmPasswordLayout = findViewById(R.id.confirm_password_layout);
+        registerButton = findViewById(R.id.register_button);
+        errorIcon = ContextCompat.getDrawable(this, R.drawable.ic_error);
 
 
         //If already A User..Go back to Login
@@ -83,7 +91,7 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
                 } else {
                     username.setError(null);
                     //Assign valid data
-                    usernameResult = usernameStr;
+                    user.setUsername(usernameStr);
                 }
 
 
@@ -91,7 +99,7 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
 
                     registerMail.setError(getString(R.string.invalid_format), errorIcon);
                 } else {//Assign valid data
-                    mailResult = registerMailStr;
+                    user.setEmail(registerMailStr);
                 }
 
                 if (!isValidPassword(registerPassStr)) {
@@ -103,7 +111,7 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
                     //Reveal password Toggle icon again once user restart typing
                     callTextWatcher(registerPass, passwordLayout);
                 } else {//send valid data
-                    passResult = registerPassStr;
+                    //passResult = registerPassStr;
                 }
 
                 if (!isMatchedPassword(registerPassStr, confirmPassStr)) {
@@ -115,12 +123,14 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
                     //Reveal password Toggle icon again once user restart typing
                     callTextWatcher(confirmPass, confirmPasswordLayout);
 
+                } else {
+                    user.setPassword(registerPassStr);
                 }
 
                 if (!isValidMobileNumber(mobileNumberStr)) {
                     mobileNumber.setError(getString(R.string.mobile_number_invalid), errorIcon);
                 } else {
-                    mobileNumberResult = mobileNumberStr;
+                    user.setMobile(mobileNumberStr);
                 }
 
                 if (hasErrors()) {
@@ -142,10 +152,7 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
 
     // validating Username
     private boolean isValidUsername(String userName) {
-        if (!TextUtils.isEmpty(userName) && (userName.length() > 2)) {
-            return true;
-        }
-        return false;
+        return !TextUtils.isEmpty(userName) && (userName.length() > 2);
     }
 
 
@@ -157,30 +164,17 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
 
     // validating password with retype password
     private boolean isValidPassword(String pass) {
-        if (!TextUtils.isEmpty(pass) && pass.length() > 7) {
-            return true;
-        } else {
-            return false;
-        }
+        return !TextUtils.isEmpty(pass) && pass.length() > 7;
     }
 
     // validating Passwords matching
     private boolean isMatchedPassword(String pass1, String pass2) {
-        if (!TextUtils.isEmpty(pass2) && pass2.equals(pass1)) {
-            return true;
-        } else {
-            return false;
-        }
+        return !TextUtils.isEmpty(pass2) && pass2.equals(pass1);
     }
 
     // validating mobile number format
     private boolean isValidMobileNumber(String number) {
-        if (Patterns.PHONE.matcher(number).matches() && (number.length() > 10)) {
-            return true;
-
-        } else {
-            return false;
-        }
+        return Patterns.PHONE.matcher(number).matches() && (number.length() > 10);
     }
 
     private void callTextWatcher(EditText editText, final TextInputLayout layout) {
@@ -210,36 +204,32 @@ public class RegistrationActivity extends AppCompatActivity implements TokenList
         CharSequence confirmError = confirmPass.getError();
         CharSequence mobileError = mobileNumber.getError();
 
-        if (userError == null
-                && mailError == null
-                && passError == null
-                && confirmError == null
-                && mobileError == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return userError != null
+                || mailError != null
+                || passError != null
+                || confirmError != null
+                || mobileError != null;
     }
 
     private void registerUser() {
         VolleyHelper.volleyInitialize(getBaseContext());
-        VolleyHelper.registerUser(usernameResult, mailResult, passResult, mobileNumberResult);
-        VolleyHelper.setTokenListener(this);
+        VolleyHelper.registerUser(user);
+        VolleyHelper.setAuthResponseListener(this);
         VolleyHelper.performRequest();
     }
 
     //Save Token to SharedPreferences once received..
     @Override
-    public void onTokenReceived(String token) {
-        PreferenceManager.getDefaultSharedPreferences(getBaseContext())
-                .edit()
-                .putString(TOKEN_KEY, token)
+    public void onResponseReceived(UserModel receivedModel) {
+        user = receivedModel;
+        preferences.edit()
+                .putString(TOKEN_KEY, user.getToken())
                 .apply();
         Log.i("Statuss", "Token Saved!");
     }
 
     @Override
-    public void onTokenError() {
+    public void onResponseError() {
         Toast.makeText(getApplicationContext(), "Login Error!", Toast.LENGTH_LONG)
                 .show();
     }

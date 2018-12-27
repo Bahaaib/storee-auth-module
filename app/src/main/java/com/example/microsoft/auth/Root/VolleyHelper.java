@@ -3,14 +3,13 @@ package com.example.microsoft.auth.Root;
 import android.content.Context;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.microsoft.auth.Auth.TokenListener;
+import com.example.microsoft.auth.Auth.AuthResponseListener;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -31,7 +30,7 @@ public class VolleyHelper {
 
     private static String requestType;
     private static String recentToken;
-    private static TokenListener tokenListener;
+    private static AuthResponseListener authResponseListener;
 
     private static RequestQueue requestQueue;
     private static JSONObject userObj;
@@ -53,12 +52,12 @@ public class VolleyHelper {
     }
 
 
-    public static void loginUser(String email, String password) {
+    public static void loginUser(UserModel data) {
         userObj = new JSONObject();
 
         try {
-            userObj.put("email", email);
-            userObj.put("password", password);
+            userObj.put("email", data.getEmail());
+            userObj.put("password", data.getPassword());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -67,14 +66,14 @@ public class VolleyHelper {
     }
 
 
-    public static void registerUser(String username, String email, String password, String mobile) {
+    public static void registerUser(UserModel data) {
         userObj = new JSONObject();
 
         try {
-            userObj.put("name_en", username);
-            userObj.put("email", email);
-            userObj.put("password", password);
-            userObj.put("phone", mobile);
+            userObj.put("name_en", data.getUsername());
+            userObj.put("email", data.getEmail());
+            userObj.put("password", data.getPassword());
+            userObj.put("phone", data.getMobile());
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -82,6 +81,24 @@ public class VolleyHelper {
 
         setApiType(TYPE_REGISTER);
 
+    }
+
+
+    public static void changeUserData(UserModel data) {
+
+        if (data != null) {
+            userObj = new JSONObject();
+            try {
+                userObj.put("phone", data.getMobile());
+                userObj.put("gender", data.getGender());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            userObj = null;
+        }
+
+        setApiType(TYPE_LOGIN);
     }
 
 
@@ -95,8 +112,8 @@ public class VolleyHelper {
     }
 
 
-    public static void setTokenListener(TokenListener listener) {
-        tokenListener = listener;
+    public static void setAuthResponseListener(AuthResponseListener listener) {
+        authResponseListener = listener;
     }
 
 
@@ -117,17 +134,16 @@ public class VolleyHelper {
                             Gson gson = new Gson();
 
                             JSONObject object = response.getJSONObject("success");
-                            UserModel user = gson.fromJson(object.toString(), UserModel.class);
+                            if (object != null) {
+                                UserModel user = gson.fromJson(object.toString(), UserModel.class);
 
-                            String userToken = user.getToken();
-                            Log.i("username", user.getUsername());
-                            Log.i("userToken", user.getToken());
+                                Log.i("username", user.getUsername());
+                                Log.i("userToken", user.getToken());
 
-                            //Notify others that Token has been received
-                            if (!userToken.isEmpty()) {
-                                tokenListener.onTokenReceived(userToken);
-                            }else {
-                                tokenListener.onTokenError();
+                                //Notify others that Token has been received
+                                authResponseListener.onResponseReceived(user);
+                            } else {
+                                authResponseListener.onResponseError();
                             }
 
                             //}
@@ -148,14 +164,14 @@ public class VolleyHelper {
                 Log.i("APIMessage", getApiUrl());
 
                 //Notify others Token has not been received in time..
-                tokenListener.onTokenError();
+                authResponseListener.onResponseError();
 
 
             }
 
         }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 final Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
                 headers.put("Accept", "application/json");
@@ -175,7 +191,7 @@ public class VolleyHelper {
     public static void performUserDataRequest() {
 
         final JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
-                getApiUrl(), null,
+                getApiUrl(), userObj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -189,17 +205,17 @@ public class VolleyHelper {
                             Gson gson = new Gson();
 
                             JSONObject object = response.getJSONObject("success");
-                            UserModel user = gson.fromJson(object.toString(), UserModel.class);
 
-                            String userToken = user.getToken();
-                            Log.i("username", user.getUsername());
-                            Log.i("userToken", user.getToken());
+                            if (object != null) {
+                                UserModel user = gson.fromJson(object.toString(), UserModel.class);
 
-                            //Notify others that Token has been received
-                            if (!userToken.isEmpty()) {
-                                tokenListener.onTokenReceived(userToken);
-                            }else {
-                                tokenListener.onTokenError();
+                                Log.i("username", user.getUsername());
+                                Log.i("userToken", user.getToken());
+
+                                //Notify others that Token has been received
+                                authResponseListener.onResponseReceived(user);
+                            } else {
+                                authResponseListener.onResponseError();
                             }
 
                             //}
@@ -220,14 +236,14 @@ public class VolleyHelper {
                 Log.i("APIMessage", getApiUrl());
 
                 //Notify others Token has not been received in time..
-                tokenListener.onTokenError();
+                authResponseListener.onResponseError();
 
 
             }
 
         }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 final Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
                 headers.put("Accept", "application/json");

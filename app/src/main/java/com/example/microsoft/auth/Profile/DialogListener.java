@@ -4,5 +4,5 @@ import com.example.microsoft.auth.Root.UserModel;
 
 public interface DialogListener {
 
-     void onDataPass(UserModel profile);
+    void onDataChanged(UserModel model);
 }

@@ -2,22 +2,23 @@ package com.example.microsoft.auth.Profile;
 
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.microsoft.auth.Auth.AuthResponseListener;
 import com.example.microsoft.auth.R;
 import com.example.microsoft.auth.Root.UserModel;
 import com.example.microsoft.auth.Root.VolleyHelper;
 
 
-public class ProfileActivity extends AppCompatActivity implements DialogListener {
+public class ProfileActivity extends AppCompatActivity implements DialogListener, AuthResponseListener {
 
     private final String GENDER_TAG = "genderDialog";
     private final String NUMBER_TAG = "numberDialog";
@@ -25,7 +26,6 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     private final String TOKEN_NOT_FOUND = "empty";
 
 
-    private String female, male;
     private TextView myOredrs;
     private TextView disputedOrders;
     private TextView wishingList;
@@ -36,6 +36,7 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     private DialogFragment numberDialog;
 
     private SharedPreferences preferences;
+    private UserModel user;
 
 
     @Override
@@ -49,11 +50,14 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        if (user == null) {
+            user = new UserModel();
+        }
 
-        female = getString(R.string.female);
-        male = getString(R.string.male);
+        //Request the most recent user data..
+        requestChangeUserData(null);
+
 
         initViews();
 
@@ -114,13 +118,13 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     }
 
     @Override
-    public void onDataPass(UserModel data) {
-        mobileNumber.setText(data.getMobile());
+    public void onDataChanged(UserModel modelReceived) {
+        user = modelReceived;
 
-        if (data.isMale()) {
-            genderType.setText(male);
-        } else
-            genderType.setText(female);
+        mobileNumber.setText(user.getMobile());
+        genderType.setText(user.getGender());
+
+        requestChangeUserData(user);
 
     }
 
@@ -134,14 +138,15 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
 
     }
 
-    private void requestUserData() {
+    private void requestChangeUserData(UserModel modelChanged) {
         VolleyHelper.volleyInitialize(getBaseContext());
 
         if (!getRecentToken().equals(TOKEN_NOT_FOUND)) {
             VolleyHelper.setUserToken(getRecentToken());
-            //VolleyHelper.
-        }else {
-            showRandomError();
+            VolleyHelper.changeUserData(modelChanged);
+            VolleyHelper.performUserDataRequest();
+        } else {
+            showUnexpectedError();
         }
 
 
@@ -151,8 +156,22 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
         return preferences.getString(TOKEN_KEY, TOKEN_NOT_FOUND);
     }
 
-    private void showRandomError(){
-        Toast.makeText(getApplicationContext(),"Unexpected Error", Toast.LENGTH_LONG)
+    private void showUnexpectedError() {
+        Toast.makeText(getApplicationContext(), "Unexpected Error", Toast.LENGTH_LONG)
+                .show();
+    }
+
+    @Override
+    public void onResponseReceived(UserModel modelReceived) {
+        user = modelReceived;
+
+        mobileNumber.setText(user.getMobile());
+        genderType.setText(user.getGender());
+    }
+
+    @Override
+    public void onResponseError() {
+        Toast.makeText(getApplicationContext(), "Unexpected Error", Toast.LENGTH_LONG)
                 .show();
     }
 }

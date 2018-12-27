@@ -11,13 +11,15 @@ public class UserModel implements Serializable {
     @SerializedName("email")
     private String email;
 
+    private String password;
+
     @SerializedName("phone")
     private String mobile;
 
     @SerializedName("token")
     private String token;
 
-    private boolean male;
+    private String gender;
 
 
     public UserModel() {
@@ -40,6 +42,14 @@ public class UserModel implements Serializable {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getMobile() {
         return mobile;
     }
@@ -56,12 +66,12 @@ public class UserModel implements Serializable {
         this.token = token;
     }
 
-    public boolean isMale() {
-        return male;
+    public String getGender() {
+        return gender;
     }
 
-    public void setIsMale(boolean isMale){
-        this.male = isMale;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
 }

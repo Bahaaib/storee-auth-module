@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/user_background_img"
@@ -26,7 +26,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/profile_image_margin_top"
             android:src="@drawable/profile_image"
-            app:civ_border_color="@color/profileImageBorder"
+            app:civ_border_color="@color/colorWhite"
             app:civ_border_width="@dimen/profile_image_border" />
 
         <TextView
