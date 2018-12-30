@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
 import com.example.microsoft.auth.Root.VolleyHelper;
 
@@ -33,6 +34,7 @@ public class RegistrationActivity extends AppCompatActivity implements AuthRespo
     private Drawable errorIcon;
     private SharedPreferences preferences;
     private UserModel user;
+    private UserHandler userHandler;
 
     private final String TOKEN_KEY = "token";
 
@@ -51,18 +53,13 @@ public class RegistrationActivity extends AppCompatActivity implements AuthRespo
             user = new UserModel();
         }
 
-        //init Views
-        alredayMemText = findViewById(R.id.already_member);
-        username = findViewById(R.id.username);
-        registerMail = findViewById(R.id.register_mail);
-        registerPass = findViewById(R.id.register_password);
-        confirmPass = findViewById(R.id.confirm_password);
-        mobileNumber = findViewById(R.id.mobile_number);
-        passwordLayout = findViewById(R.id.register_password_layout);
-        confirmPasswordLayout = findViewById(R.id.confirm_password_layout);
-        registerButton = findViewById(R.id.register_button);
-        errorIcon = ContextCompat.getDrawable(this, R.drawable.ic_error);
+        if (userHandler == null) {
+            userHandler = UserHandler.getInstance();
+            Log.i("SingletonStatuss", userHandler.toString());
+        }
 
+        //init Views
+        initViews();
 
         //If already A User..Go back to Login
         alredayMemText.setOnClickListener(new View.OnClickListener() {
@@ -220,17 +217,36 @@ public class RegistrationActivity extends AppCompatActivity implements AuthRespo
 
     //Save Token to SharedPreferences once received..
     @Override
-    public void onResponseReceived(UserModel receivedModel) {
-        user = receivedModel;
-        preferences.edit()
-                .putString(TOKEN_KEY, user.getToken())
-                .apply();
-        Log.i("Statuss", "Token Saved!");
+    public void onResponseReceived(UserModel recModel) {
+        user = recModel;
+
+        //avoid destroying singleton data
+        //avoid NPE
+        if (user != null) {
+            userHandler.setUser(user);
+            preferences.edit()
+                    .putString(TOKEN_KEY, userHandler.getUser().getToken())
+                    .apply();
+            Log.i("Statuss", "Token Saved!");
+        }
     }
 
     @Override
     public void onResponseError() {
         Toast.makeText(getApplicationContext(), "Login Error!", Toast.LENGTH_LONG)
                 .show();
+    }
+
+    private void initViews() {
+        alredayMemText = findViewById(R.id.already_member);
+        username = findViewById(R.id.username);
+        registerMail = findViewById(R.id.register_mail);
+        registerPass = findViewById(R.id.register_password);
+        confirmPass = findViewById(R.id.confirm_password);
+        mobileNumber = findViewById(R.id.mobile_number);
+        passwordLayout = findViewById(R.id.register_password_layout);
+        confirmPasswordLayout = findViewById(R.id.confirm_password_layout);
+        registerButton = findViewById(R.id.register_button);
+        errorIcon = ContextCompat.getDrawable(this, R.drawable.ic_error);
     }
 }

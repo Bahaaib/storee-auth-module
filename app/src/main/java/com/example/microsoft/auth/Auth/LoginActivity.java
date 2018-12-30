@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.microsoft.auth.Profile.ProfileActivity;
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
 import com.example.microsoft.auth.Root.VolleyHelper;
 import com.facebook.CallbackManager;
@@ -52,6 +53,9 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     private boolean isLoggedOut;
     private SharedPreferences preferences;
     private UserModel user;
+    private UserHandler userHandler;
+
+    private TextView debugLog;
 
 
     //FB OAuth
@@ -77,14 +81,13 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
             user = new UserModel();
         }
 
-        //Mail Auth init..
-        regText = findViewById(R.id.register_text);
-        loginMail = findViewById(R.id.login_mail);
-        loginPassword = findViewById(R.id.login_password);
-        loginPasswordLayout = findViewById(R.id.login_password_layout);
-        mailLoginButton = findViewById(R.id.mail_login);
-        errorIcon = ContextCompat.getDrawable(this, R.drawable.ic_error);
+        if (userHandler == null) {
+            userHandler = UserHandler.getInstance();
+            Log.i("SingletonStatuss", userHandler.toString());
+        }
 
+        //Mail Auth init..
+        initViews();
 
         //Not A member.. Go to Register
         regText.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +142,26 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
         });
 
 
+        //Virtual user Logging for debugging purposes
+        debugLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.setUsername("iBahaa");
+                user.setEmail("Bahaa@Bahaa.com");
+                user.setMobile("0123456789");
+                user.setToken("vertualToken");
+                user.setGender("Male");
+
+                userHandler.setUser(user);
+
+                //Reset Logout FLAG
+                preferences.edit().putBoolean(LOGOUT_KEY, false).apply();
+
+                moveToActivity();
+            }
+        });
+
+
         //FB OAuth init..
         loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
@@ -157,7 +180,7 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     protected void onStart() {
         super.onStart();
         restoreSavedPrefs();
-        if (!token.equals(TOKEN_NOT_FOUND) && !isLoggedOut){
+        if (!token.equals(TOKEN_NOT_FOUND) && !isLoggedOut) {
             Log.i("Statuss", "Logged in AUTO");
         } else {
             Log.i("Statuss", "Logged in NEW SESSION!");
@@ -206,8 +229,7 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
         //Reset Logout FLAG
         preferences.edit().putBoolean(LOGOUT_KEY, false).apply();
 
-        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-        startActivity(intent);
+
     }
 
 
@@ -217,16 +239,27 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     }
 
     @Override
-    public void onResponseReceived(UserModel receivedModel) {
-        user = receivedModel;
-        preferences.edit()
-                .putString(TOKEN_KEY, user.getToken())
-                .apply();
-        Log.i("Statuss", "Token Saved!");
+    public void onResponseReceived(UserModel recModel) {
+        user = recModel;
+
+        //avoid destroying singleton data
+        //avoid NPE
+        if (user != null) {
+            userHandler.setUser(user);
+            preferences.edit()
+                    .putString(TOKEN_KEY, userHandler.getUser().getToken())
+                    .apply();
+            Log.i("Statuss", "Token Saved!");
+
+            moveToActivity();
+        }
+
+
     }
 
     @Override
     public void onResponseError() {
+        Log.i("Statuss", "Error!");
         Toast.makeText(getApplicationContext(), "Login Error!", Toast.LENGTH_LONG)
                 .show();
     }
@@ -238,6 +271,21 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
         return mailError != null || passError != null;
     }
 
+    private void initViews() {
+        regText = findViewById(R.id.register_text);
+        loginMail = findViewById(R.id.login_mail);
+        loginPassword = findViewById(R.id.login_password);
+        loginPasswordLayout = findViewById(R.id.login_password_layout);
+        mailLoginButton = findViewById(R.id.mail_login);
+        errorIcon = ContextCompat.getDrawable(this, R.drawable.ic_error);
+
+        debugLog = findViewById(R.id.debug_login);
+    }
+
+    private void moveToActivity() {
+        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+        startActivity(intent);
+    }
 
 
     private void facebookRequest() {

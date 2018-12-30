@@ -152,5 +152,13 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/debug_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="525dp"
+        android:text="Debugging Logging" />
+
 
 </RelativeLayout>

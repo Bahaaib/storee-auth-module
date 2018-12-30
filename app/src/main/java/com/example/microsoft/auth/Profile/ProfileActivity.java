@@ -8,12 +8,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.microsoft.auth.Auth.AuthResponseListener;
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
 import com.example.microsoft.auth.Root.VolleyHelper;
 
@@ -26,6 +28,7 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     private final String TOKEN_NOT_FOUND = "empty";
 
 
+    private TextView username;
     private TextView myOredrs;
     private TextView disputedOrders;
     private TextView wishingList;
@@ -37,6 +40,7 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
 
     private SharedPreferences preferences;
     private UserModel user;
+    private UserHandler userHandler;
 
 
     @Override
@@ -50,16 +54,30 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        initViews();
+
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (user == null) {
             user = new UserModel();
         }
 
+        if (userHandler == null) {
+            userHandler = UserHandler.getInstance();
+
+            //Load logged user data in Activity
+            user = userHandler.getUser();
+            Log.i("Statuss", user.getEmail());
+
+        }
+
         //Request the most recent user data..
-        requestChangeUserData(null);
+        //requestChangeUserData(null);
 
 
-        initViews();
+        //Update user data views
+        setViewsValue();
+
+
 
         genderDialog = new GenderDialog();
         numberDialog = new NumberDialog();
@@ -129,6 +147,7 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     }
 
     private void initViews() {
+        username = findViewById(R.id.profile_user_name);
         myOredrs = findViewById(R.id.my_order);
         disputedOrders = findViewById(R.id.disputed_order);
         wishingList = findViewById(R.id.wishing_list);
@@ -138,12 +157,18 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
 
     }
 
-    private void requestChangeUserData(UserModel modelChanged) {
+    private void setViewsValue() {
+        username.setText(user.getUsername());
+        genderType.setText(user.getGender());
+        mobileNumber.setText(user.getMobile());
+    }
+
+    private void requestChangeUserData(UserModel chModel) {
         VolleyHelper.volleyInitialize(getBaseContext());
 
         if (!getRecentToken().equals(TOKEN_NOT_FOUND)) {
             VolleyHelper.setUserToken(getRecentToken());
-            VolleyHelper.changeUserData(modelChanged);
+            VolleyHelper.changeUserData(chModel);
             VolleyHelper.performUserDataRequest();
         } else {
             showUnexpectedError();
@@ -156,21 +181,27 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
         return preferences.getString(TOKEN_KEY, TOKEN_NOT_FOUND);
     }
 
-    private void showUnexpectedError() {
-        Toast.makeText(getApplicationContext(), "Unexpected Error", Toast.LENGTH_LONG)
-                .show();
-    }
 
     @Override
-    public void onResponseReceived(UserModel modelReceived) {
-        user = modelReceived;
+    public void onResponseReceived(UserModel recModel) {
+        user = recModel;
+        //avoid destroying singleton data
+        //avoid NPE
+        if (user != null) {
+            userHandler.setUser(recModel);
+            setViewsValue();
+            Log.i("Statuss", "Retrieved!");
 
-        mobileNumber.setText(user.getMobile());
-        genderType.setText(user.getGender());
+        }
+
     }
 
     @Override
     public void onResponseError() {
+        showUnexpectedError();
+    }
+
+    private void showUnexpectedError() {
         Toast.makeText(getApplicationContext(), "Unexpected Error", Toast.LENGTH_LONG)
                 .show();
     }

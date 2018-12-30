@@ -1,7 +1,6 @@
 package com.example.microsoft.auth.Profile;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,8 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
-
 
 
 public class NumberDialog extends DialogFragment {
@@ -31,6 +30,7 @@ public class NumberDialog extends DialogFragment {
     private Drawable errorIcon;
     private DialogListener dialogListener;
     private UserModel data;
+    private UserHandler userHandler;
 
     @Override
     public void onAttach(Context context) {
@@ -45,14 +45,32 @@ public class NumberDialog extends DialogFragment {
 
         initViews();
 
-        data = new UserModel();
+        if (data == null) {
+            data = new UserModel();
+        }
+        if (userHandler == null) {
+            userHandler = UserHandler.getInstance();
+
+            //Load logged user data in Activity
+            data = userHandler.getUser();
+        }
 
 
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String number = numberValue.getText().toString();
+                if (!isValidMobileNumber(number)) {
+                    numberValue.setError(getString(R.string.mobile_number_invalid), errorIcon);
+                } else {
+                    data.setMobile(number);
+                    //Pass the changes to singleton
+                    userHandler.setUser(data);
+                    //Notify Activity about the new changes
+                    dialogListener.onDataChanged(userHandler.getUser());
 
-                getDialog().dismiss();
+                    getDialog().dismiss();
+                }
             }
         });
 
@@ -76,12 +94,7 @@ public class NumberDialog extends DialogFragment {
 
     // validating mobile number format
     private boolean isValidMobileNumber(String number) {
-        if (Patterns.PHONE.matcher(number).matches() && (number.length() > 10)) {
-            return true;
-
-        } else {
-            return false;
-        }
+        return Patterns.PHONE.matcher(number).matches() && (number.length() > 10);
     }
 
 }

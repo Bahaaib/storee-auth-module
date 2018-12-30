@@ -17,7 +17,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/user_background_image" />
+            android:background="@color/colorPrimary" />
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
@@ -30,7 +30,7 @@
             app:civ_border_width="@dimen/profile_image_border" />
 
         <TextView
-            android:id="@+id/user_name"
+            android:id="@+id/profile_user_name"
             style="@style/userNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/general_text"
             android:text="@string/dialog_number_hint"
-            android:textColor="@color/colorWhite" />
+            android:textColor="@color/colorPrimary" />
 
         <TextView
             android:id="@+id/email"
@@ -174,7 +174,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/email"
             android:text="@string/female"
-            android:textColor="@color/colorWhite" />
+            android:textColor="@color/colorPrimary" />
 
         <ImageView
             android:id="@+id/shipping_address_edit"

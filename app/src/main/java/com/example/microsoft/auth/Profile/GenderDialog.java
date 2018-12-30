@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
 
 
@@ -26,6 +27,7 @@ public class GenderDialog extends DialogFragment {
     private UserModel data;
     private View view;
     private DialogListener dialogListener;
+    private UserHandler userHandler;
 
     @Override
     public void onAttach(Context context) {
@@ -38,7 +40,16 @@ public class GenderDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.gender_dialog, container, false);
 
-        data = new UserModel();
+        if (data == null) {
+            data = new UserModel();
+        }
+
+        if (userHandler == null) {
+            userHandler = UserHandler.getInstance();
+
+            //Load logged user data in Activity
+            data = userHandler.getUser();
+        }
 
         initViews();
 
@@ -46,10 +57,22 @@ public class GenderDialog extends DialogFragment {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String gender;
+                if (male.isChecked()) {
+                    gender = getString(R.string.male);
+                } else {
+                    gender = getString(R.string.female);
+                }
+                data.setMobile(gender);
+                //Pass the changes to singleton
+                userHandler.setUser(data);
+                //Notify Activity about the new changes
+                dialogListener.onDataChanged(userHandler.getUser());
 
                 getDialog().dismiss();
-
             }
+
+
         });
 
         cancelButton.setOnClickListener(new View.OnClickListener() {

@@ -11,6 +11,7 @@ public class UserModel implements Serializable {
     @SerializedName("email")
     private String email;
 
+    @SerializedName("password")
     private String password;
 
     @SerializedName("phone")
@@ -20,6 +21,8 @@ public class UserModel implements Serializable {
     private String token;
 
     private String gender;
+
+    private String imgURL;
 
 
     public UserModel() {
@@ -74,4 +77,11 @@ public class UserModel implements Serializable {
         this.gender = gender;
     }
 
+    public String getImgURL() {
+        return imgURL;
+    }
+
+    public void setImgURL(String imgURL) {
+        this.imgURL = imgURL;
+    }
 }

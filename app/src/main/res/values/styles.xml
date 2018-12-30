@@ -16,7 +16,7 @@
 
     <style name="highLightedText">
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
-        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:layout_marginTop">@dimen/highLightedText_margin_top</item>
         <item name="android:layout_marginBottom">@dimen/highLightedText_margin_bottom</item>
         <item name="android:layout_marginLeft">@dimen/highLightedText_margin_left</item>

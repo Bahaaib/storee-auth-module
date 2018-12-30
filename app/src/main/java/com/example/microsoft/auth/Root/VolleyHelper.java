@@ -23,9 +23,11 @@ import java.util.Map;
 
 public class VolleyHelper {
 
-    private final static String API_URL = "http://192.168.1.16/ecommerce/public/api/";
+    private final static String API_URL = "http://192.168.1.17/ecommerce/public/api/";
     private final static String TYPE_LOGIN = "login";
     private final static String TYPE_REGISTER = "register";
+    private final static String TYPE_UPDATE = "update";
+    private static String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjBmMDA2OTNiNjYxYzg3MGMxOTVkMTIzM2ZmZGRlNjgyZmI3ZWFhYmZhOTcwMGM5NzdkNzJhOTg1ZDQwZDI0NjUyZDZlYWY2ZTVlMDllMmIwIn0.eyJhdWQiOiIxIiwianRpIjoiMGYwMDY5M2I2NjFjODcwYzE5NWQxMjMzZmZkZGU2ODJmYjdlYWFiZmE5NzAwYzk3N2Q3MmE5ODVkNDBkMjQ2NTJkNmVhZjZlNWUwOWUyYjAiLCJpYXQiOjE1NDYxNzQ3OTUsIm5iZiI6MTU0NjE3NDc5NSwiZXhwIjoxNTc3NzEwNzk1LCJzdWIiOiIyNyIsInNjb3BlcyI6W119.gntn7XeAAtWaT69DouvesaEHTKVL6vVYsUE-uYYOJIFlbrhs6BoZi62QHn2Bw3GiTYzOtRXbZy1CDtZ55qc0Vo1oumhBNqJyH0a6B3RJKztV2-U23heYhYrf81s3PQneBL7Aj_5ZXsgdzBMldPy4SDkO3Sbx2_swo8HentmHcEOu0X7a5KkLWiKyr9FEfsUflb6JjhodwwHLdgrRKWZIKbTzhBJriO58Tv8u_f7dHs6qau0i_KLKHWHgtaJQVK8zY97RZA7LrUG6PAreW00u97zYOeazA5bhOoBVthfttwPgtLkQ6tEyrhAhWMXgcokNXX-2SP67dJnTgdjT0-XSQOtPBv9MQjYNIqgJYCZjgqi2dXD38ef8AELtjXShBb6M5G0g5oMzM_87GyMU7bzKgDP014fr0ltJDwKk2Q5cJvggi6w4ZetH2Y_phby47sG9YklGonRaReKZmZKS-4lL6woAYRuWLLWAkwyWbck1LUGRuZmSj6-qIW_1mISIrM3ZXYmQja1iGqK5lJSyeiRKF693i9gfNuy5Wll2bEr3uVJEiMScozxfa4lR7wFd_FSf4yKj1-xkNQYVtS0PDKG9GXO93e2mKBUBLTxd4cvfQ8NMEiMjoGXIEqtinTuAyUfLuIwaSxB6U8sYuGfr4j5Ek7atEFdiNRKVd96s40Kjae0";
 
 
     private static String requestType;
@@ -89,8 +91,15 @@ public class VolleyHelper {
         if (data != null) {
             userObj = new JSONObject();
             try {
+                userObj.put("name_en", data.getUsername());
                 userObj.put("phone", data.getMobile());
                 userObj.put("gender", data.getGender());
+                userObj.put("user_img", data.getImgURL());
+
+                //if user didn't ask password change, exclude from request!
+                if (data.getPassword() != null) {
+                    userObj.put("password", data.getPassword());
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -98,7 +107,7 @@ public class VolleyHelper {
             userObj = null;
         }
 
-        setApiType(TYPE_LOGIN);
+        setApiType(TYPE_UPDATE);
     }
 
 
@@ -245,9 +254,9 @@ public class VolleyHelper {
             @Override
             public Map<String, String> getHeaders() {
                 final Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json");
+                //headers.put("Content-Type", "application/json");
                 headers.put("Accept", "application/json");
-                headers.put("Authentication", "Bearer" + recentToken);
+                headers.put("Authorization", "Bearer " + token);
 
                 return headers;
             }
