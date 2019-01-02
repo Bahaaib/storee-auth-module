@@ -2,6 +2,7 @@
 <resources>
 
     <!-- TODO:Login Activity -->
+    <dimen name="login_radio_group">150dp</dimen>
     <dimen name="email_width">280dp</dimen>
     <dimen name="email_margin_top">192dp</dimen>
     <dimen name="edittext_width">260dp</dimen>
@@ -22,6 +23,7 @@
     <dimen name="forgot_margin_top">45dp</dimen>
 
 
+
     <!-- TODO:Register Activity -->
 
     <dimen name="join_margin_left">18dp</dimen>
@@ -40,10 +42,12 @@
     <dimen name="sinpass_margin_top">10dp</dimen>
 
     <dimen name="btnframe_sign_width">280dp</dimen>
-    <dimen name="btnframe_sign_margin_top">450dp</dimen>
+    <dimen name="btnframe_sign_margin_top">490dp</dimen>
 
     <dimen name="signbtn_width">280dp</dimen>
-    <dimen name="signbtn_margin_top">450dp</dimen>
+    <dimen name="signbtn_margin_top">490dp</dimen>
+
+    <dimen name="register_radio_group">440dp</dimen>
 
 
     <!-- TODO:Profile Activity -->

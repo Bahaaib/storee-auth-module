@@ -181,6 +181,31 @@
                 android:textColorHint="@color/colorFontGrey" />
         </android.support.design.widget.TextInputLayout>
 
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/register_radio_group"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/buyer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimary"
+                android:checked="true"
+                android:layoutDirection="rtl"
+                android:text="@string/buyer" />
+
+            <RadioButton
+                android:id="@+id/seller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:buttonTint="@color/colorPrimary"
+                android:text="@string/seller" />
+        </RadioGroup>
+
 
         <FrameLayout
             android:id="@+id/button_frame"
@@ -206,7 +231,5 @@
             android:text="@string/register_button"
             android:textColor="@color/colorWhite"
             android:textStyle="bold" />
-
-
     </RelativeLayout>
 </ScrollView>
