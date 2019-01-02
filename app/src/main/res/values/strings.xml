@@ -59,5 +59,11 @@
     <string name="dummy_mail">mail@domain.com</string>
     <string name="dummy_name">User_name</string>
 
+    <!-- TODO: Privacy Activity -->
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="legal_info">Legal Information</string>
+    <string name="new_password">New Password:</string>
+
+
 
 </resources>

@@ -63,4 +63,28 @@
     </style>
 
 
+    <!-- TODO: Privacy Activity -->
+    <style name="privacyActivityStyle" >
+        <item name="android:layout_marginTop">@dimen/privacyActivityStyle_marginTop</item>
+        <item name="android:layout_marginStart">@dimen/privacyActivityStyle_marginStart</item>
+        <item name="android:layout_marginBottom">@dimen/privacyActivityStyle_marginBottom</item>
+        <item name="android:layout_marginEnd">@dimen/privacyActivityStyle_marginEnd</item>
+        <item name="android:textSize">@dimen/privacyActivityStyle_textSize</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="passwordDialog">
+        <item name="android:layout_marginStart">@dimen/passwordDialog_marginStart</item>
+        <item name="android:layout_marginEnd">@dimen/passwordDialog_marginEnd</item>
+        <item name="android:layout_marginTop">@dimen/passwordDialog_marginTop</item>
+        <item name="android:layout_marginBottom">@dimen/passwordDialog_marginBottom</item>
+    </style>
+    <style name="passwordDialogText">
+        <item name="android:textSize">@dimen/passwordDialog_textSize</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+
+
 </resources>

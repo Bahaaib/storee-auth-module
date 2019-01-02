@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.microsoft.auth.Privacy.PrivacyActivity;
 import com.example.microsoft.auth.Profile.ProfileActivity;
 import com.example.microsoft.auth.R;
 import com.example.microsoft.auth.Root.UserHandler;
@@ -283,7 +284,7 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     }
 
     private void moveToActivity() {
-        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+        Intent intent = new Intent(LoginActivity.this, PrivacyActivity.class);
         startActivity(intent);
     }
 

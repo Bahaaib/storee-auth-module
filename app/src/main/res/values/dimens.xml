@@ -74,4 +74,23 @@
     <dimen name="numberDialog_margin_left">30dp</dimen>
     <dimen name="numberDialog_margin_right">30dp</dimen>
 
+
+    <!--TODO:PrivacyActivity-->
+    <dimen name="privacyActivityStyle_marginTop">20dp</dimen>
+    <dimen name="privacyActivityStyle_marginBottom">20dp</dimen>
+    <dimen name="privacyActivityStyle_marginStart">30dp</dimen>
+    <dimen name="privacyActivityStyle_marginEnd">30dp</dimen>
+    <dimen name="privacyActivityStyle_textSize">18sp</dimen>
+
+    <dimen name="passwordDialog_marginStart">15dp</dimen>
+    <dimen name="passwordDialog_marginEnd">15dp</dimen>
+    <dimen name="passwordDialog_marginTop">20dp</dimen>
+    <dimen name="passwordDialog_marginBottom">20dp</dimen>
+    <dimen name="passwordDialog_textSize">12sp</dimen>
+    <dimen name="editText_height">40dp</dimen>
+    <dimen name="privacy_dialog_tilo_width">170dp</dimen>
+    <dimen name="privacy_tv_margin_start">10dp</dimen>
+    <dimen name="privacy_tilo_margin_end">5dp</dimen>
+    <dimen name="privacy_tilo_margin_bottom">10dp</dimen>
+
 </resources>

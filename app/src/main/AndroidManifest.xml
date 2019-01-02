@@ -43,6 +43,7 @@
         </activity>
         <activity android:name=".Auth.RegistrationActivity" />
         <activity android:name=".Profile.ProfileActivity" />
+        <activity android:name=".Privacy.PrivacyActivity" />
     </application>
 
 </manifest>
