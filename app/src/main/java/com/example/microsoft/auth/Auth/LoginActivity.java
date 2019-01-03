@@ -39,6 +39,7 @@ import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 public class LoginActivity extends AppCompatActivity implements AuthResponseListener {
 
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     private SharedPreferences preferences;
     private UserModel user;
     private UserHandler userHandler;
+    private Unbinder unbinder;
 
     @BindView(R.id.debug_login)
     TextView debugLog;
@@ -79,12 +81,23 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     private ProfileTracker profileTracker;
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        restoreSavedPrefs();
+        if (!token.equals(TOKEN_NOT_FOUND) && !isLoggedOut) {
+            Log.i("Statuss", "Logged in AUTO");
+        } else {
+            Log.i("Statuss", "Logged in NEW SESSION!");
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //init Views via Butterknife..
-        ButterKnife.bind(this);
+        //inject Views via Butterknife..
+        unbinder = ButterKnife.bind(this);
 
         //Prevent keyboard from automatic popping up once onCreate called..
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -116,17 +129,19 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        restoreSavedPrefs();
-        if (!token.equals(TOKEN_NOT_FOUND) && !isLoggedOut) {
-            Log.i("Statuss", "Logged in AUTO");
-        } else {
-            Log.i("Statuss", "Logged in NEW SESSION!");
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        //Free up memory from views
+        unbinder.unbind();
     }
 
     //Views events
+    @OnClick(R.id.register_text)
+    void registerIfNotUser() {
+        Intent registerIntent = new Intent(LoginActivity.this, RegistrationActivity.class);
+        startActivity(registerIntent);
+    }
+
     @OnClick(R.id.debug_login)
     void debugLogin() {
         user.setUsername("iBahaa");

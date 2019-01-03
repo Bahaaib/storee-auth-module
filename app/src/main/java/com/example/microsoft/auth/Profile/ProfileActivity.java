@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +17,11 @@ import com.example.microsoft.auth.R;
 import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
 import com.example.microsoft.auth.Root.VolleyHelper;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 
 
 public class ProfileActivity extends AppCompatActivity implements DialogListener, AuthResponseListener {
@@ -28,33 +32,37 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     private final String TOKEN_NOT_FOUND = "empty";
 
 
-    private TextView username;
-    private TextView myOredrs;
-    private TextView disputedOrders;
-    private TextView wishingList;
-    private TextView myPoints;
-    private TextView genderType;
-    private TextView mobileNumber;
-    private DialogFragment genderDialog;
-    private DialogFragment numberDialog;
+    @BindView(R.id.profile_user_name)
+    TextView username;
+    @BindView(R.id.my_order)
+    TextView myOredrs;
+    @BindView(R.id.disputed_order)
+    TextView disputedOrders;
+    @BindView(R.id.wishing_list)
+    TextView wishingList;
+    @BindView(R.id.my_points)
+    TextView myPoints;
+    @BindView(R.id.gender)
+    TextView genderType;
+    @BindView(R.id.mobile_number)
+    TextView mobileNumber;
+
+    DialogFragment genderDialog;
+    DialogFragment numberDialog;
 
     private SharedPreferences preferences;
     private UserModel user;
     private UserHandler userHandler;
+    private Unbinder unbinder;
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        initViews();
+        //inject views via Butterknife
+        unbinder = ButterKnife.bind(this);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (user == null) {
@@ -78,62 +86,57 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
         setViewsValue();
 
 
-
         genderDialog = new GenderDialog();
         numberDialog = new NumberDialog();
 
+    }
 
-        genderType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //Free up memory from views
+        unbinder.unbind();
+    }
 
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                Fragment prev = getSupportFragmentManager().findFragmentByTag(GENDER_TAG);
-                if (prev != null) {
-                    transaction.remove(prev);
-                }
+    //Views events
+    @OnClick(R.id.gender)
+    void showGenderDialog() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(GENDER_TAG);
+        if (prev != null) {
+            transaction.remove(prev);
+        }
 
-                transaction.add(genderDialog, GENDER_TAG).commit();
-
-
-            }
-        });
-
-        mobileNumber.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                Fragment prev = getSupportFragmentManager().findFragmentByTag(NUMBER_TAG);
-                if (prev != null) {
-                    transaction.remove(prev);
-                }
-
-                transaction.add(numberDialog, NUMBER_TAG).commit();
-            }
-        });
-
-        myOredrs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        disputedOrders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        wishingList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        transaction.add(genderDialog, GENDER_TAG).commit();
 
     }
+
+    @OnClick(R.id.mobile_number)
+    void showMobileDialog() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag(NUMBER_TAG);
+        if (prev != null) {
+            transaction.remove(prev);
+        }
+
+        transaction.add(numberDialog, NUMBER_TAG).commit();
+    }
+
+    //TODO: Linkup MY Orders Activity
+    @OnClick(R.id.my_order)
+    void goToMyOrders() {
+    }
+
+    //TODO: Linkup Disputed Orders Activity
+    @OnClick(R.id.disputed_order)
+    void goToDisputedOrders() {
+    }
+
+    //TODO: Linkup Wishing List Activity
+    @OnClick(R.id.wishing_list)
+    void goToWishingList() {
+    }
+
 
     @Override
     public void onDataChanged(UserModel modelReceived) {
@@ -143,17 +146,6 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
         genderType.setText(user.getGender());
 
         requestChangeUserData(user);
-
-    }
-
-    private void initViews() {
-        username = findViewById(R.id.profile_user_name);
-        myOredrs = findViewById(R.id.my_order);
-        disputedOrders = findViewById(R.id.disputed_order);
-        wishingList = findViewById(R.id.wishing_list);
-        myPoints = findViewById(R.id.my_points);
-        genderType = findViewById(R.id.gender);
-        mobileNumber = findViewById(R.id.mobile_number);
 
     }
 
@@ -180,7 +172,6 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     private String getRecentToken() {
         return preferences.getString(TOKEN_KEY, TOKEN_NOT_FOUND);
     }
-
 
     @Override
     public void onResponseReceived(UserModel recModel) {
