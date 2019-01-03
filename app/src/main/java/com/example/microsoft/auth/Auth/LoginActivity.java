@@ -7,14 +7,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.microsoft.auth.Privacy.PrivacyActivity;
-import com.example.microsoft.auth.Profile.ProfileActivity;
 import com.example.microsoft.auth.R;
 import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
@@ -38,14 +35,26 @@ import com.facebook.login.widget.LoginButton;
 
 import java.util.Arrays;
 
+import butterknife.BindDrawable;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class LoginActivity extends AppCompatActivity implements AuthResponseListener {
 
     //Mail Auth
-    private TextView regText;
-    private EditText loginMail, loginPassword;
-    private TextInputLayout loginPasswordLayout;
-    private Button mailLoginButton;
-    private Drawable errorIcon;
+    @BindView(R.id.register_text)
+    TextView regText;
+    @BindView(R.id.login_mail)
+    EditText loginMail;
+    @BindView(R.id.login_password)
+    EditText loginPassword;
+    @BindView(R.id.login_password_layout)
+    TextInputLayout loginPasswordLayout;
+    @BindView(R.id.mail_login)
+    Button mailLoginButton;
+    @BindDrawable(R.drawable.ic_error)
+    Drawable errorIcon;
 
     private final String TOKEN_KEY = "token";
     private final String TOKEN_NOT_FOUND = "empty";
@@ -56,7 +65,8 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     private UserModel user;
     private UserHandler userHandler;
 
-    private TextView debugLog;
+    @BindView(R.id.debug_login)
+    TextView debugLog;
 
 
     //FB OAuth
@@ -64,13 +74,17 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     private static final String PUPLIC_PROFILE = "public_profile";
     private static final String EMAIL = "email";
 
-    private LoginButton loginButton;
+    @BindView(R.id.login_button)
+    LoginButton loginButton;
     private ProfileTracker profileTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //init Views via Butterknife..
+        ButterKnife.bind(this);
 
         //Prevent keyboard from automatic popping up once onCreate called..
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -87,84 +101,8 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
             Log.i("SingletonStatuss", userHandler.toString());
         }
 
-        //Mail Auth init..
-        initViews();
-
-        //Not A member.. Go to Register
-        regText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent loginIntent = new Intent(LoginActivity.this, RegistrationActivity.class);
-                startActivity(loginIntent);
-            }
-        });
-
-        //Perform Login..
-        mailLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final String loginMailStr = loginMail.getText().toString();
-                final String loginPasswordStr = loginPassword.getText().toString();
-                errorIcon.setBounds(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight());
-
-
-                if (!isValidEmail(loginMailStr)) {
-                    loginMail.setError(getString(R.string.invalid_mail), errorIcon);
-
-                } else {//Assign valid data
-                    user.setEmail(loginMailStr);
-                }
-
-                if (!isValidPassword(loginPasswordStr)) {
-                    loginPassword.setError(getString(R.string.pass_char_less), errorIcon);
-
-                    //Hide password Toggle icon to avoid icons overlay
-                    loginPasswordLayout.setPasswordVisibilityToggleEnabled(false);
-
-                    //Reveal password Toggle icon again once user restart typing
-                    callTextWatcher(loginPassword, loginPasswordLayout);
-                } else {
-                    //Assign valid Data
-                    user.setPassword(loginPasswordStr);
-
-
-                }
-                if (hasErrors()) {
-                    Toast.makeText(getApplicationContext(), R.string.login_data_problem, Toast.LENGTH_LONG).show();
-                } else {
-                    requestLogIn();
-                }
-
-
-            }
-
-
-        });
-
-
-        //Virtual user Logging for debugging purposes
-        debugLog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                user.setUsername("iBahaa");
-                user.setEmail("Bahaa@Bahaa.com");
-                user.setMobile("0123456789");
-                user.setToken("vertualToken");
-                user.setGender("Male");
-
-                userHandler.setUser(user);
-
-                //Reset Logout FLAG
-                preferences.edit().putBoolean(LOGOUT_KEY, false).apply();
-
-                moveToActivity();
-            }
-        });
-
 
         //FB OAuth init..
-        loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList(EMAIL));
 
 
@@ -186,6 +124,60 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
         } else {
             Log.i("Statuss", "Logged in NEW SESSION!");
         }
+    }
+
+    //Views events
+    @OnClick(R.id.debug_login)
+    void debugLogin() {
+        user.setUsername("iBahaa");
+        user.setEmail("Bahaa@Bahaa.com");
+        user.setMobile("0123456789");
+        user.setToken("vertualToken");
+        user.setGender("Male");
+
+        userHandler.setUser(user);
+
+        //Reset Logout FLAG
+        preferences.edit().putBoolean(LOGOUT_KEY, false).apply();
+
+        moveToActivity();
+    }
+
+    @OnClick(R.id.mail_login)
+    void doLogin() {
+        final String loginMailStr = loginMail.getText().toString();
+        final String loginPasswordStr = loginPassword.getText().toString();
+        errorIcon.setBounds(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight());
+
+
+        if (!isValidEmail(loginMailStr)) {
+            loginMail.setError(getString(R.string.invalid_mail), errorIcon);
+
+        } else {//Assign valid data
+            user.setEmail(loginMailStr);
+        }
+
+        if (!isValidPassword(loginPasswordStr)) {
+            loginPassword.setError(getString(R.string.pass_char_less), errorIcon);
+
+            //Hide password Toggle icon to avoid icons overlay
+            loginPasswordLayout.setPasswordVisibilityToggleEnabled(false);
+
+            //Reveal password Toggle icon again once user restart typing
+            callTextWatcher(loginPassword, loginPasswordLayout);
+        } else {
+            //Assign valid Data
+            user.setPassword(loginPasswordStr);
+
+
+        }
+        if (hasErrors()) {
+            Toast.makeText(getApplicationContext(), R.string.login_data_problem, Toast.LENGTH_LONG).show();
+        } else {
+            requestLogIn();
+        }
+
+
     }
 
     // validating email id
@@ -265,6 +257,7 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
                 .show();
     }
 
+
     private boolean hasErrors() {
         CharSequence mailError = loginMail.getError();
         CharSequence passError = loginPassword.getError();
@@ -272,16 +265,6 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
         return mailError != null || passError != null;
     }
 
-    private void initViews() {
-        regText = findViewById(R.id.register_text);
-        loginMail = findViewById(R.id.login_mail);
-        loginPassword = findViewById(R.id.login_password);
-        loginPasswordLayout = findViewById(R.id.login_password_layout);
-        mailLoginButton = findViewById(R.id.mail_login);
-        errorIcon = ContextCompat.getDrawable(this, R.drawable.ic_error);
-
-        debugLog = findViewById(R.id.debug_login);
-    }
 
     private void moveToActivity() {
         Intent intent = new Intent(LoginActivity.this, PrivacyActivity.class);
@@ -289,6 +272,7 @@ public class LoginActivity extends AppCompatActivity implements AuthResponseList
     }
 
 
+    //FB events
     private void facebookRequest() {
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
