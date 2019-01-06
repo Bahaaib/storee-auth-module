@@ -18,6 +18,7 @@ import android.widget.EditText;
 
 import com.example.microsoft.auth.Profile.DialogListener;
 import com.example.microsoft.auth.R;
+import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
 
 import butterknife.BindDrawable;
@@ -47,7 +48,8 @@ public class PasswordDialog extends DialogFragment {
     Drawable errorIcon;
 
     private DialogListener dialogListener;
-    private UserModel model;
+    private UserModel data;
+    private UserHandler userHandler;
     private Unbinder unbinder;
 
 
@@ -70,8 +72,17 @@ public class PasswordDialog extends DialogFragment {
 
         newPassword.setError(null);
         confirmPassword.setError(null);
-        model = new UserModel();
 
+        if (data == null) {
+            data = new UserModel();
+        }
+
+        if (userHandler == null) {
+            userHandler = UserHandler.getInstance();
+
+            //Load logged user data in Activity
+            data = userHandler.getUser();
+        }
 
         return view;
     }
@@ -90,9 +101,9 @@ public class PasswordDialog extends DialogFragment {
         String confirmPasswordStr = confirmPassword.getText().toString();
 
         if (isValidPassword(newPasswordStr) && isMatchedPassword(newPasswordStr, confirmPasswordStr)) {
-            // new password is ready
-            // model.setUserPassword(newPasswordStr);
-            dialogListener.onDataChanged(model);
+            // Update password & Notify all ..
+            data.setPassword(newPasswordStr);
+            dialogListener.onDataChanged(data);
 
             getDialog().dismiss();
         } else {

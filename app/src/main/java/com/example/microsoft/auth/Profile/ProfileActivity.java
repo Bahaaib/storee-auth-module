@@ -155,12 +155,14 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
         mobileNumber.setText(user.getMobile());
     }
 
+
     private void requestChangeUserData(UserModel chModel) {
         VolleyHelper.volleyInitialize(getBaseContext());
 
         if (!getRecentToken().equals(TOKEN_NOT_FOUND)) {
             VolleyHelper.setUserToken(getRecentToken());
             VolleyHelper.changeUserData(chModel);
+            VolleyHelper.setAuthResponseListener(this);
             VolleyHelper.performUserDataRequest();
         } else {
             showUnexpectedError();
@@ -168,6 +170,7 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
 
 
     }
+
 
     private String getRecentToken() {
         return preferences.getString(TOKEN_KEY, TOKEN_NOT_FOUND);
@@ -191,6 +194,7 @@ public class ProfileActivity extends AppCompatActivity implements DialogListener
     public void onResponseError() {
         showUnexpectedError();
     }
+
 
     private void showUnexpectedError() {
         Toast.makeText(getApplicationContext(), "Unexpected Error", Toast.LENGTH_LONG)
