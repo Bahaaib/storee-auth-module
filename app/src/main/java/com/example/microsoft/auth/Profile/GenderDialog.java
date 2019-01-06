@@ -15,19 +15,30 @@ import com.example.microsoft.auth.R;
 import com.example.microsoft.auth.Root.UserHandler;
 import com.example.microsoft.auth.Root.UserModel;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+
 
 public class GenderDialog extends DialogFragment {
 
     private final String TAG = "genderDialog";
 
-    private Button okButton;
-    private Button cancelButton;
-    private RadioButton male;
-    private RadioButton female;
+    @BindView(R.id.ok_button)
+    Button okButton;
+    @BindView(R.id.cancel_button)
+    Button cancelButton;
+    @BindView(R.id.male_radio_button)
+    RadioButton male;
+    @BindView(R.id.female_radio_button)
+    RadioButton female;
+
     private UserModel data;
     private View view;
     private DialogListener dialogListener;
     private UserHandler userHandler;
+    private Unbinder unbinder;
 
     @Override
     public void onAttach(Context context) {
@@ -40,6 +51,9 @@ public class GenderDialog extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.gender_dialog, container, false);
 
+        //inject views via Buuterknife..
+        unbinder = ButterKnife.bind(this, view);
+
         if (data == null) {
             data = new UserModel();
         }
@@ -51,46 +65,35 @@ public class GenderDialog extends DialogFragment {
             data = userHandler.getUser();
         }
 
-        initViews();
-
-
-        okButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String gender;
-                if (male.isChecked()) {
-                    gender = getString(R.string.male);
-                } else {
-                    gender = getString(R.string.female);
-                }
-                data.setMobile(gender);
-                //Pass the changes to singleton
-                userHandler.setUser(data);
-                //Notify Activity about the new changes
-                dialogListener.onDataChanged(userHandler.getUser());
-
-                getDialog().dismiss();
-            }
-
-
-        });
-
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
-            }
-        });
-
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //Free up memory from views
+        unbinder.unbind();
+    }
 
-    public void initViews() {
-        okButton = view.findViewById(R.id.ok_button);
-        cancelButton = view.findViewById(R.id.cancel_button);
-        male = view.findViewById(R.id.male_radio_button);
-        female = view.findViewById(R.id.female_radio_button);
+    @OnClick(R.id.ok_button)
+    void onOKPressed() {
+        String gender;
+        if (male.isChecked()) {
+            gender = getString(R.string.male);
+        } else {
+            gender = getString(R.string.female);
+        }
+        data.setMobile(gender);
+        //Pass the changes to singleton
+        userHandler.setUser(data);
+        //Notify Activity about the new changes
+        dialogListener.onDataChanged(userHandler.getUser());
 
+        getDialog().dismiss();
+    }
+
+    @OnClick(R.id.cancel_button)
+    void onCancelPressed() {
+        getDialog().dismiss();
     }
 }

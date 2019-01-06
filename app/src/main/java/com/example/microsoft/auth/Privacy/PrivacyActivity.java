@@ -45,6 +45,7 @@ public class PrivacyActivity extends AppCompatActivity implements DialogListener
 
         passwordDialog = new PasswordDialog();
 
+        editIcon.setBounds(1, 0, editIcon.getMinimumWidth(), editIcon.getMinimumHeight());
         editPen.setImageDrawable(editIcon);
     }
 
